@@ -1,11 +1,15 @@
 import 'dart:typed_data';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:station_statistics/Database/Entities/Invoices.dart';
 import 'package:station_statistics/Screens/pdfController.dart';
+
+import '../constaint.dart';
 
 class PDFPreview extends StatelessWidget {
   final List<Invoice> data;
@@ -55,33 +59,32 @@ class PDFPreview extends StatelessWidget {
                 maxPageWidth: 700,
                 build: (format) => snapshot.data,
                 actions: [
-                  // PdfPreviewAction(
-                  //   icon: const Icon(Icons.save),
-                  //   onPressed: (context, build, pageFormat) async {
-                  //     var status = await Permission.storage.status;
-                  //     print("status: ${status.isGranted}");
-                  //     if (status.isGranted) {
-                  //       String outputFile =
-                  //           await FilePicker.platform.getDirectoryPath();
-                  //       print("outputFile ${outputFile}");
-                  //       if (outputFile != null) {
-                  //         await PDFController().saveAsFileToPhone(
-                  //             pageFormat, data, invoiceNumber, outputFile);
-                  //       } else {
-                  //         CustomDialog(
-                  //           cancelButton: false,
-                  //           confirmButtonTitle: "Ok",
-                  //           confirmButton: () {
-                  //             Get.back();
-                  //           },
-                  //           message: "Please choose folder to save file in",
-                  //         );
-                  //       }
-                  //     } else {
-                  //       await Permission.storage.request();
-                  //     }
-                  //   },
-                  // )
+                  PdfPreviewAction(
+                    icon: const Icon(Icons.save),
+                    onPressed: (context, build, pageFormat) async {
+                      // var status = await Permission.storage.status;
+                      // print("status: ${status.isGranted}");
+                      // if (status.isGranted) {
+                      String outputFile = await FilePicker.platform.saveFile();
+                      print("outputFile ${outputFile}");
+                      if (outputFile != null) {
+                        await PDFController().saveAsFileToPhone(
+                            pageFormat, data, invoiceNumber, outputFile);
+                        // } else {
+                        CustomDialog(
+                          cancelButton: false,
+                          confirmButtonTitle: "Ok",
+                          confirmButton: () {
+                            Get.back();
+                          },
+                          message: "Please choose folder to save file in",
+                        );
+                      }
+                      // } else {
+                      //   await Permission.storage.request();
+                      // }
+                    },
+                  )
                 ],
                 onPrinted: _showPrintedToast,
                 onShared: _showSharedToast,

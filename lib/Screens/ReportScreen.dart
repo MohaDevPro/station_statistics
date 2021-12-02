@@ -434,11 +434,10 @@ class _ReportState extends State<Report> {
                               Directory appDocDir =
                                   await getApplicationDocumentsDirectory();
                               String appDocPath = appDocDir.path;
-                              await excel.encode().then((onValue) {
-                                f = File(join("$appDocPath/Report.xlsx"))
-                                  ..createSync(recursive: true)
-                                  ..writeAsBytesSync(onValue);
-                              });
+                              var bytes = excel.encode();
+                              f = File(join("$appDocPath/Report.xlsx"))
+                                ..createSync(recursive: true)
+                                ..writeAsBytesSync(bytes);
                             } else {
                               f = await _saveAsFile(
                                   PdfPageFormat.a4, snapshot.data);
