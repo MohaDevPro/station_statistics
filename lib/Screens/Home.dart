@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/route_manager.dart';
 import 'package:station_statistics/Screens/AddUsers.dart';
 import 'package:station_statistics/Screens/Login.dart';
+import 'package:station_statistics/Screens/PdfPreview.dart';
 import 'package:station_statistics/Screens/ReportScreen.dart';
 import 'package:station_statistics/Services/user_preferences.dart';
 
@@ -42,6 +43,37 @@ class _HomeState extends State<Home> {
               Get.off(() => Login());
             }),
         actions: [
+          IconButton(
+              icon: Icon(Icons.print),
+              onPressed: () async {
+                var lastInvoice = await LocalDB()
+                    .appDatabaseCache
+                    .invoiceDAO
+                    .getAllInvoices();
+                if (lastInvoice.isNotEmpty) {
+                  Get.to(
+                      () => PDFPreview(
+                            data: [
+                              lastInvoice.last,
+                            ],
+                            invoiceNumber: lastInvoice.last.id,
+                          ),
+                      preventDuplicates: true);
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) => CustomDialog(
+                      message: "There is no invoices",
+                      color: Colors.blue.shade300,
+                      confirmButton: () {
+                        Get.back();
+                      },
+                      cancelButton: false,
+                      confirmButtonTitle: "Ok",
+                    ),
+                  );
+                }
+              }),
           IconButton(
               icon: Icon(Icons.stacked_bar_chart),
               onPressed: () {
@@ -314,7 +346,6 @@ class _HomeState extends State<Home> {
                             quantity: double.parse(controller.text),
                             timeStamp: DateTime.now().microsecondsSinceEpoch,
                             totalPrice: total,
-                            isSaved: false,
                           ),
                         );
                 print("result $result");

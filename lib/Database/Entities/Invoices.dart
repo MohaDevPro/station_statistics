@@ -10,7 +10,7 @@ class Invoice {
   double? totalPrice;
   double? price;
   double? quantity;
-  bool? isSaved;
+  // bool? isSaved;
   Invoice({
     this.id,
     this.timeStamp,
@@ -18,7 +18,7 @@ class Invoice {
     this.totalPrice,
     this.price,
     this.quantity,
-    this.isSaved,
+    // this.isSaved,
   });
 
   String? getIndex(int index, int row) {

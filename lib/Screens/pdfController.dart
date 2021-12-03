@@ -1,16 +1,17 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:station_statistics/Database/Entities/Invoices.dart';
+import 'package:station_statistics/Services/user_preferences.dart';
 
 class PDFController {
   Future<Uint8List> buildPdf(
-      PdfPageFormat pageFormat, List<Invoice> data, int? invoiceNumber) async {
+      PdfPageFormat pageFormat, List<Invoice> data, int? invoiceNumber,
+      {String? date}) async {
     // Create a PDF document.
     final doc = pw.Document();
     var allTotal = 0.0;
@@ -44,27 +45,27 @@ class PDFController {
   }
 
   Future<File> saveAsFile(PdfPageFormat pageFormat, List<Invoice> data,
-      int invoiceNumber, String outputFile) async {
+      {int invoiceNumber = 0, String outputFile = ""}) async {
     final bytes = await buildPdf(pageFormat, data, invoiceNumber);
-    String? outputFile = await FilePicker.platform.getDirectoryPath();
     final appDocDir = await getApplicationDocumentsDirectory();
     final appDocPath = appDocDir.path;
-    final file = File(outputFile! + '/' + 'Report.pdf');
+    final file = File(appDocPath + '/' + 'Report.pdf');
     print('Save as file ${file.path} ...');
     await file.writeAsBytes(bytes);
-    saveAsFileToPhone(file);
+    // saveAsFileToPhone(file);
     return file;
   }
 
-  Future<void> saveAsFileToPhone(File file) async {
-    // final appDocDir = await getApplicationDocumentsDirectory();
-    // final appDocPath = appDocDir.path;
-    // final bytes = await buildPdf(pageFormat, data, invoiceNumber);
-    // final file = File(path + '/' + 'Report.pdf');
-    await file.create();
+  Future<void> saveAsFileToPhone(PdfPageFormat pageFormat, List<Invoice> data,
+      {int invoiceNumber = 0, String outputFile = ""}) async {
+    final appDocDir = await getApplicationDocumentsDirectory();
+    final appDocPath = appDocDir.path;
+    final bytes = await buildPdf(pageFormat, data, invoiceNumber);
+    final file = File(appDocPath + '/' + 'Report.pdf');
+    await file
+      ..create()
+      ..writeAsBytes(bytes);
     // file.writeAsBytes(bytes);
-
-    var f = await file.open(mode: FileMode.write);
   }
   // Future<void> saveAsFileToPhone(PdfPageFormat pageFormat, List<Invoice> data,
   //      int? invoiceNumber, String path) async {
@@ -136,7 +137,7 @@ class PDFController {
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
                       pw.Text('Net Total: '),
-                      pw.Text("${(_total - _total * 0.15).toStringAsFixed(2)}"),
+                      pw.Text("${(_total + _total * 0.15).toStringAsFixed(2)}"),
                     ],
                   ),
                 ),
@@ -240,7 +241,8 @@ class PDFController {
   //   }
   //   return file;
   // }
-  pw.Widget _buildHeader(pw.Context context, int? invoiceNumber) {
+  pw.Widget _buildHeader(pw.Context context, int? invoiceNumber,
+      {String? date}) {
     return pw.Column(
       children: [
         pw.Row(
@@ -254,7 +256,7 @@ class PDFController {
                     padding: const pw.EdgeInsets.only(left: 20),
                     alignment: pw.Alignment.centerLeft,
                     child: pw.Text(
-                      'INVOICE',
+                      '${invoiceNumber == null ? "REPORT" : "INVOICE"}',
                       style: pw.TextStyle(
                         color: baseColor,
                         fontWeight: pw.FontWeight.bold,
@@ -271,7 +273,7 @@ class PDFController {
                     padding: const pw.EdgeInsets.only(
                         left: 40, top: 10, bottom: 10, right: 20),
                     alignment: pw.Alignment.centerLeft,
-                    height: 50,
+                    height: 70,
                     child: pw.DefaultTextStyle(
                       style: pw.TextStyle(
                         color: PdfColors.white,
@@ -280,10 +282,13 @@ class PDFController {
                       child: pw.GridView(
                         crossAxisCount: 2,
                         children: [
-                          pw.Text('Invoice #'),
-                          pw.Text(invoiceNumber.toString()),
+                          pw.Text('User'),
+                          pw.Text("${UserPreferences().getUser().userName}"),
+                          pw.Text(
+                              '${invoiceNumber == null ? "Report" : "Invoice #"}'),
+                          pw.Text("${invoiceNumber ?? ""}"),
                           pw.Text('Date:'),
-                          pw.Text(_formatDate(DateTime.now())),
+                          pw.Text(date ?? _formatDate(DateTime.now())),
                         ],
                       ),
                     ),
@@ -297,17 +302,12 @@ class PDFController {
                 children: [
                   pw.BarcodeWidget(
                     data:
-                        'Invoice: ${invoiceNumber.toString()} \n Date: ${_formatDate(DateTime.now())}',
+                        'Invoice: ${invoiceNumber.toString()} \n Date: ${_formatDate(DateTime.now())} \n User: ${UserPreferences().getUser().userName}',
                     width: 60,
                     height: 60,
                     barcode: pw.Barcode.qrCode(),
                     drawText: false,
                   ),
-
-                  // pw.Container(
-                  //   color: baseColor,
-                  //   padding: pw.EdgeInsets.only(top: 3),
-                  // ),
                 ],
               ),
             ),

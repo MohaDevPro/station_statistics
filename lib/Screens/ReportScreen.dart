@@ -93,7 +93,7 @@ class _ReportState extends State<Report> {
                     });
                   }),
               IconButton(
-                  icon: Icon(Icons.filter_alt),
+                  icon: Icon(Icons.filter_list),
                   onPressed: () {
                     var now = DateTime.now();
                     showDialog(
@@ -103,41 +103,44 @@ class _ReportState extends State<Report> {
                         message: "Choose Date from and To:",
                         confirmButtonTitle: "Apply",
                         confirmButton: () {
-                          setState(() {
-                            Get.back();
-                            if (from > to) {
-                              var swap = to;
-                              to = from;
-                              from = swap;
-                            }
-                          });
+                          if (from > to) {
+                            var swap = to;
+                            to = from;
+                            from = swap;
+                          }
+                          setState(() {});
+                          Get.back();
                         },
                         cancelButton: false,
+                        icon: Icons.filter_list,
+                        color: Colors.blue,
                         widgets: [
                           TextButton.icon(
                               onPressed: () async {
-                                var date = await (showDatePicker(
-                                        context: context,
-                                        initialDate:
-                                            DateTime(now.year, now.month, 1),
-                                        firstDate: DateTime(2021, 1, 1),
-                                        lastDate: DateTime.now())
-                                    as FutureOr<DateTime>);
-                                from = DateTime(date.year, date.month, date.day,
-                                        23, 59, 59)
+                                DateTime? date =
+                                    DateTime(2021, 1, 1, 00, 00, 00);
+                                date = await (showDatePicker(
+                                    context: context,
+                                    initialDate:
+                                        DateTime(now.year, now.month, 1),
+                                    firstDate: DateTime(2021, 1, 1),
+                                    lastDate: DateTime.now()));
+                                from = DateTime(date!.year, date.month,
+                                        date.day, 00, 00, 00)
                                     .microsecondsSinceEpoch;
                               },
                               icon: Icon(Icons.calendar_today_outlined),
                               label: Text("Date from")),
                           TextButton.icon(
                               onPressed: () async {
-                                var date = await (showDatePicker(
-                                        context: context,
-                                        initialDate: now,
-                                        firstDate: DateTime(2021),
-                                        lastDate: DateTime.now())
-                                    as FutureOr<DateTime>);
-                                to = DateTime(date.year, date.month, date.day,
+                                DateTime? date = DateTime(
+                                    now.year, now.month, now.day, 23, 59, 59);
+                                date = await (showDatePicker(
+                                    context: context,
+                                    initialDate: now,
+                                    firstDate: DateTime(2021),
+                                    lastDate: DateTime.now()));
+                                to = DateTime(date!.year, date.month, date.day,
                                         23, 59, 59)
                                     .microsecondsSinceEpoch;
                               },
@@ -236,41 +239,45 @@ class _ReportState extends State<Report> {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Radio(
-                                  value: 1,
-                                  groupValue: radio,
-                                  onChanged: (dynamic v) {
-                                    setState(() {
-                                      print(
-                                          "============= Value = ${v} ===========");
-                                      radio = v;
-                                    });
-                                  }),
-                              Image.asset(
-                                "assets/excel.png",
-                                width: 50,
-                                height: 50,
+                              Row(
+                                children: [
+                                  Radio(
+                                      value: 1,
+                                      groupValue: radio,
+                                      onChanged: (dynamic v) {
+                                        setState(() {
+                                          print(
+                                              "============= Value = ${v} ===========");
+                                          radio = v;
+                                        });
+                                      }),
+                                  Image.asset(
+                                    "assets/excel.png",
+                                    width: 50,
+                                    height: 50,
+                                  ),
+                                  Radio(
+                                      value: 2,
+                                      groupValue: radio,
+                                      onChanged: (dynamic v) {
+                                        setState(() {
+                                          radio = v;
+                                        });
+                                        print(
+                                            "============= Value = ${v} ===========");
+                                      }),
+                                  Image.asset(
+                                    "assets/pdf.png",
+                                    width: 50,
+                                    height: 50,
+                                  ),
+                                ],
                               ),
-                              Radio(
-                                  value: 2,
-                                  groupValue: radio,
-                                  onChanged: (dynamic v) {
-                                    setState(() {
-                                      radio = v;
-                                    });
-                                    print(
-                                        "============= Value = ${v} ===========");
-                                  }),
-                              Image.asset(
-                                "assets/pdf.png",
-                                width: 50,
-                                height: 50,
-                              ),
-                              IconButton(
+                              TextButton.icon(
                                   icon: Icon(Icons.visibility),
-                                  tooltip: 'Preview',
+                                  label: Text('PDF Preview'),
                                   onPressed: () {
                                     Get.to(() => PDFPreview(
                                           data: snapshot.data,
@@ -593,7 +600,7 @@ class _ReportState extends State<Report> {
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
                       pw.Text('Net Total: '),
-                      pw.Text("${(_total - _total * 0.15).toStringAsFixed(2)}"),
+                      pw.Text("${(_total + _total * 0.15).toStringAsFixed(2)}"),
                     ],
                   ),
                 ),
@@ -646,7 +653,7 @@ class _ReportState extends State<Report> {
         border: pw.Border(
           bottom: pw.BorderSide(
             color: accentColor,
-            width: .5,
+            width: 0.5,
           ),
         ),
       ),
@@ -677,7 +684,7 @@ class HeaderTable extends StatelessWidget {
     return TableCell(
       child: Container(
         height: 30,
-        color: Colors.green,
+        color: Colors.teal,
         child: Center(
           child: Text(
             text!,

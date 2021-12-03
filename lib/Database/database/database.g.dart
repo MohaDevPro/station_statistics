@@ -86,7 +86,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER, `userName` TEXT, `password` TEXT, `type` INTEGER, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Invoice` (`id` INTEGER, `timeStamp` INTEGER, `type` TEXT, `totalPrice` REAL, `price` REAL, `quantity` REAL, `isSaved` INTEGER, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `Invoice` (`id` INTEGER, `timeStamp` INTEGER, `type` TEXT, `totalPrice` REAL, `price` REAL, `quantity` REAL, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -228,9 +228,7 @@ class _$InvoiceDAO extends InvoiceDAO {
                   'type': item.type,
                   'totalPrice': item.totalPrice,
                   'price': item.price,
-                  'quantity': item.quantity,
-                  'isSaved':
-                      item.isSaved == null ? null : (item.isSaved! ? 1 : 0)
+                  'quantity': item.quantity
                 }),
         _invoiceUpdateAdapter = UpdateAdapter(
             database,
@@ -242,9 +240,7 @@ class _$InvoiceDAO extends InvoiceDAO {
                   'type': item.type,
                   'totalPrice': item.totalPrice,
                   'price': item.price,
-                  'quantity': item.quantity,
-                  'isSaved':
-                      item.isSaved == null ? null : (item.isSaved! ? 1 : 0)
+                  'quantity': item.quantity
                 }),
         _invoiceDeletionAdapter = DeletionAdapter(
             database,
@@ -256,9 +252,7 @@ class _$InvoiceDAO extends InvoiceDAO {
                   'type': item.type,
                   'totalPrice': item.totalPrice,
                   'price': item.price,
-                  'quantity': item.quantity,
-                  'isSaved':
-                      item.isSaved == null ? null : (item.isSaved! ? 1 : 0)
+                  'quantity': item.quantity
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -282,9 +276,7 @@ class _$InvoiceDAO extends InvoiceDAO {
             type: row['type'] as String?,
             totalPrice: row['totalPrice'] as double?,
             price: row['price'] as double?,
-            quantity: row['quantity'] as double?,
-            isSaved:
-                row['isSaved'] == null ? null : (row['isSaved'] as int) != 0));
+            quantity: row['quantity'] as double?));
   }
 
   @override
@@ -297,9 +289,7 @@ class _$InvoiceDAO extends InvoiceDAO {
             type: row['type'] as String?,
             totalPrice: row['totalPrice'] as double?,
             price: row['price'] as double?,
-            quantity: row['quantity'] as double?,
-            isSaved:
-                row['isSaved'] == null ? null : (row['isSaved'] as int) != 0),
+            quantity: row['quantity'] as double?),
         arguments: [from, to]);
   }
 
@@ -312,9 +302,7 @@ class _$InvoiceDAO extends InvoiceDAO {
             type: row['type'] as String?,
             totalPrice: row['totalPrice'] as double?,
             price: row['price'] as double?,
-            quantity: row['quantity'] as double?,
-            isSaved:
-                row['isSaved'] == null ? null : (row['isSaved'] as int) != 0),
+            quantity: row['quantity'] as double?),
         arguments: [id]);
   }
 
