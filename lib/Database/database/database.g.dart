@@ -6,6 +6,7 @@ part of 'database.dart';
 // FloorGenerator
 // **************************************************************************
 
+// ignore: avoid_classes_with_only_static_members
 class $FloorAppDatabase {
   /// Creates a database builder for a persistent database.
   /// Once a database is built, you should keep a reference to it and re-use it.
@@ -22,11 +23,11 @@ class $FloorAppDatabase {
 class _$AppDatabaseBuilder {
   _$AppDatabaseBuilder(this.name);
 
-  final String name;
+  final String? name;
 
   final List<Migration> _migrations = [];
 
-  Callback _callback;
+  Callback? _callback;
 
   /// Adds migrations to the builder.
   _$AppDatabaseBuilder addMigrations(List<Migration> migrations) {
@@ -43,7 +44,7 @@ class _$AppDatabaseBuilder {
   /// Creates the database and initializes it.
   Future<AppDatabase> build() async {
     final path = name != null
-        ? await sqfliteDatabaseFactory.getDatabasePath(name)
+        ? await sqfliteDatabaseFactory.getDatabasePath(name!)
         : ':memory:';
     final database = _$AppDatabase();
     database.database = await database.open(
@@ -56,20 +57,21 @@ class _$AppDatabaseBuilder {
 }
 
 class _$AppDatabase extends AppDatabase {
-  _$AppDatabase([StreamController<String> listener]) {
+  _$AppDatabase([StreamController<String>? listener]) {
     changeListener = listener ?? StreamController<String>.broadcast();
   }
 
-  UserDAO _userDAOInstance;
+  UserDAO? _userDAOInstance;
 
-  InvoiceDAO _invoiceDAOInstance;
+  InvoiceDAO? _invoiceDAOInstance;
 
   Future<sqflite.Database> open(String path, List<Migration> migrations,
-      [Callback callback]) async {
+      [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
       version: 1,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
+        await callback?.onConfigure?.call(database);
       },
       onOpen: (database) async {
         await callback?.onOpen?.call(database);
@@ -109,7 +111,7 @@ class _$UserDAO extends UserDAO {
         _userInsertionAdapter = InsertionAdapter(
             database,
             'User',
-            (User item) => <String, dynamic>{
+            (User item) => <String, Object?>{
                   'id': item.id,
                   'userName': item.userName,
                   'password': item.password,
@@ -119,7 +121,7 @@ class _$UserDAO extends UserDAO {
             database,
             'User',
             ['id'],
-            (User item) => <String, dynamic>{
+            (User item) => <String, Object?>{
                   'id': item.id,
                   'userName': item.userName,
                   'password': item.password,
@@ -129,7 +131,7 @@ class _$UserDAO extends UserDAO {
             database,
             'User',
             ['id'],
-            (User item) => <String, dynamic>{
+            (User item) => <String, Object?>{
                   'id': item.id,
                   'userName': item.userName,
                   'password': item.password,
@@ -151,45 +153,45 @@ class _$UserDAO extends UserDAO {
   @override
   Future<List<User>> getAllUsers() async {
     return _queryAdapter.queryList('SELECT * FROM User',
-        mapper: (Map<String, dynamic> row) => User(
-            id: row['id'] as int,
-            userName: row['userName'] as String,
-            password: row['password'] as String,
-            type: row['type'] as int));
+        mapper: (Map<String, Object?> row) => User(
+            id: row['id'] as int?,
+            userName: row['userName'] as String?,
+            password: row['password'] as String?,
+            type: row['type'] as int?));
   }
 
   @override
-  Future<User> getUser(String userName, String password) async {
+  Future<User?> getUser(String userName, String password) async {
     return _queryAdapter.query(
-        'SELECT * FROM User where userName = ? And password = ?',
-        arguments: <dynamic>[userName, password],
-        mapper: (Map<String, dynamic> row) => User(
-            id: row['id'] as int,
-            userName: row['userName'] as String,
-            password: row['password'] as String,
-            type: row['type'] as int));
+        'SELECT * FROM User where userName = ?1 And password = ?2',
+        mapper: (Map<String, Object?> row) => User(
+            id: row['id'] as int?,
+            userName: row['userName'] as String?,
+            password: row['password'] as String?,
+            type: row['type'] as int?),
+        arguments: [userName, password]);
   }
 
   @override
-  Future<User> getUserByUsername(String userName) async {
-    return _queryAdapter.query('SELECT * FROM User where userName = ?',
-        arguments: <dynamic>[userName],
-        mapper: (Map<String, dynamic> row) => User(
-            id: row['id'] as int,
-            userName: row['userName'] as String,
-            password: row['password'] as String,
-            type: row['type'] as int));
+  Future<User?> getUserByUsername(String userName) async {
+    return _queryAdapter.query('SELECT * FROM User where userName = ?1',
+        mapper: (Map<String, Object?> row) => User(
+            id: row['id'] as int?,
+            userName: row['userName'] as String?,
+            password: row['password'] as String?,
+            type: row['type'] as int?),
+        arguments: [userName]);
   }
 
   @override
-  Future<User> getUserByType(int type) async {
-    return _queryAdapter.query('SELECT * FROM User where type = ?',
-        arguments: <dynamic>[type],
-        mapper: (Map<String, dynamic> row) => User(
-            id: row['id'] as int,
-            userName: row['userName'] as String,
-            password: row['password'] as String,
-            type: row['type'] as int));
+  Future<User?> getUserByType(int type) async {
+    return _queryAdapter.query('SELECT * FROM User where type = ?1',
+        mapper: (Map<String, Object?> row) => User(
+            id: row['id'] as int?,
+            userName: row['userName'] as String?,
+            password: row['password'] as String?,
+            type: row['type'] as int?),
+        arguments: [type]);
   }
 
   @override
@@ -220,7 +222,7 @@ class _$InvoiceDAO extends InvoiceDAO {
         _invoiceInsertionAdapter = InsertionAdapter(
             database,
             'Invoice',
-            (Invoice item) => <String, dynamic>{
+            (Invoice item) => <String, Object?>{
                   'id': item.id,
                   'timeStamp': item.timeStamp,
                   'type': item.type,
@@ -228,13 +230,13 @@ class _$InvoiceDAO extends InvoiceDAO {
                   'price': item.price,
                   'quantity': item.quantity,
                   'isSaved':
-                      item.isSaved == null ? null : (item.isSaved ? 1 : 0)
+                      item.isSaved == null ? null : (item.isSaved! ? 1 : 0)
                 }),
         _invoiceUpdateAdapter = UpdateAdapter(
             database,
             'Invoice',
             ['id'],
-            (Invoice item) => <String, dynamic>{
+            (Invoice item) => <String, Object?>{
                   'id': item.id,
                   'timeStamp': item.timeStamp,
                   'type': item.type,
@@ -242,13 +244,13 @@ class _$InvoiceDAO extends InvoiceDAO {
                   'price': item.price,
                   'quantity': item.quantity,
                   'isSaved':
-                      item.isSaved == null ? null : (item.isSaved ? 1 : 0)
+                      item.isSaved == null ? null : (item.isSaved! ? 1 : 0)
                 }),
         _invoiceDeletionAdapter = DeletionAdapter(
             database,
             'Invoice',
             ['id'],
-            (Invoice item) => <String, dynamic>{
+            (Invoice item) => <String, Object?>{
                   'id': item.id,
                   'timeStamp': item.timeStamp,
                   'type': item.type,
@@ -256,7 +258,7 @@ class _$InvoiceDAO extends InvoiceDAO {
                   'price': item.price,
                   'quantity': item.quantity,
                   'isSaved':
-                      item.isSaved == null ? null : (item.isSaved ? 1 : 0)
+                      item.isSaved == null ? null : (item.isSaved! ? 1 : 0)
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -274,13 +276,13 @@ class _$InvoiceDAO extends InvoiceDAO {
   @override
   Future<List<Invoice>> getAllInvoices() async {
     return _queryAdapter.queryList('SELECT * FROM Invoice',
-        mapper: (Map<String, dynamic> row) => Invoice(
-            id: row['id'] as int,
-            timeStamp: row['timeStamp'] as int,
-            type: row['type'] as String,
-            totalPrice: row['totalPrice'] as double,
-            price: row['price'] as double,
-            quantity: row['quantity'] as double,
+        mapper: (Map<String, Object?> row) => Invoice(
+            id: row['id'] as int?,
+            timeStamp: row['timeStamp'] as int?,
+            type: row['type'] as String?,
+            totalPrice: row['totalPrice'] as double?,
+            price: row['price'] as double?,
+            quantity: row['quantity'] as double?,
             isSaved:
                 row['isSaved'] == null ? null : (row['isSaved'] as int) != 0));
   }
@@ -288,32 +290,32 @@ class _$InvoiceDAO extends InvoiceDAO {
   @override
   Future<List<Invoice>> getAllInvoicesBetweenDates(int from, int to) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM Invoice where timeStamp >= ? and timeStamp <= ?',
-        arguments: <dynamic>[from, to],
-        mapper: (Map<String, dynamic> row) => Invoice(
-            id: row['id'] as int,
-            timeStamp: row['timeStamp'] as int,
-            type: row['type'] as String,
-            totalPrice: row['totalPrice'] as double,
-            price: row['price'] as double,
-            quantity: row['quantity'] as double,
+        'SELECT * FROM Invoice where timeStamp >= ?1 and timeStamp <= ?2',
+        mapper: (Map<String, Object?> row) => Invoice(
+            id: row['id'] as int?,
+            timeStamp: row['timeStamp'] as int?,
+            type: row['type'] as String?,
+            totalPrice: row['totalPrice'] as double?,
+            price: row['price'] as double?,
+            quantity: row['quantity'] as double?,
             isSaved:
-                row['isSaved'] == null ? null : (row['isSaved'] as int) != 0));
+                row['isSaved'] == null ? null : (row['isSaved'] as int) != 0),
+        arguments: [from, to]);
   }
 
   @override
-  Future<Invoice> getInvoice(int id) async {
-    return _queryAdapter.query('SELECT * FROM Invoice where id = ?',
-        arguments: <dynamic>[id],
-        mapper: (Map<String, dynamic> row) => Invoice(
-            id: row['id'] as int,
-            timeStamp: row['timeStamp'] as int,
-            type: row['type'] as String,
-            totalPrice: row['totalPrice'] as double,
-            price: row['price'] as double,
-            quantity: row['quantity'] as double,
+  Future<Invoice?> getInvoice(int id) async {
+    return _queryAdapter.query('SELECT * FROM Invoice where id = ?1',
+        mapper: (Map<String, Object?> row) => Invoice(
+            id: row['id'] as int?,
+            timeStamp: row['timeStamp'] as int?,
+            type: row['type'] as String?,
+            totalPrice: row['totalPrice'] as double?,
+            price: row['price'] as double?,
+            quantity: row['quantity'] as double?,
             isSaved:
-                row['isSaved'] == null ? null : (row['isSaved'] as int) != 0));
+                row['isSaved'] == null ? null : (row['isSaved'] as int) != 0),
+        arguments: [id]);
   }
 
   @override

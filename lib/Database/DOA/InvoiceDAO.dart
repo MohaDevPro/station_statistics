@@ -11,7 +11,7 @@ abstract class InvoiceDAO {
   Future<List<Invoice>> getAllInvoicesBetweenDates(int from, int to);
 
   @Query("SELECT * FROM Invoice where id = :id ")
-  Future<Invoice> getInvoice(int id);
+  Future<Invoice?> getInvoice(int id);
 
   @Query("DELETE FROM Invoice")
   Future<void> deleteAllInvoices();

@@ -4,13 +4,13 @@ import 'package:intl/intl.dart' as intl;
 @entity
 class Invoice {
   @PrimaryKey()
-  final int id;
-  int timeStamp;
-  String type;
-  double totalPrice;
-  double price;
-  double quantity;
-  bool isSaved;
+  final int? id;
+  int? timeStamp;
+  String? type;
+  double? totalPrice;
+  double? price;
+  double? quantity;
+  bool? isSaved;
   Invoice({
     this.id,
     this.timeStamp,
@@ -21,14 +21,14 @@ class Invoice {
     this.isSaved,
   });
 
-  String getIndex(int index, int row) {
+  String? getIndex(int index, int row) {
     final intl.DateFormat formatter = intl.DateFormat('yyyy-MM-dd hh:mm:ss');
     switch (index) {
       case 0:
         return (row + 1).toString();
       case 1:
         return formatter
-            .format(DateTime.fromMicrosecondsSinceEpoch(timeStamp))
+            .format(DateTime.fromMicrosecondsSinceEpoch(timeStamp!))
             .toString();
       case 2:
         return quantity.toString();

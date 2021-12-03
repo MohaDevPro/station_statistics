@@ -3,20 +3,20 @@ import 'package:get/route_manager.dart';
 
 class CustomDialog extends StatelessWidget {
   final String message;
-  final IconData icon;
+  final IconData? icon;
   final Function confirmButton;
   final bool cancelButton;
-  final String cancelButtonTitle;
-  final String confirmButtonTitle;
-  final String description;
+  final String? cancelButtonTitle;
+  final String? confirmButtonTitle;
+  final String? description;
   final Color color;
-  final List<Widget> widgets;
+  final List<Widget>? widgets;
 
   const CustomDialog({
-    Key key,
-    @required this.message,
+    Key? key,
+    required this.message,
     this.icon,
-    @required this.confirmButton,
+    required this.confirmButton,
     this.cancelButton = true,
     this.confirmButtonTitle,
     this.cancelButtonTitle,
@@ -73,7 +73,7 @@ class CustomDialog extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    description,
+                    description!,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Colors.black,
@@ -90,7 +90,7 @@ class CustomDialog extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
-                    children: widgets,
+                    children: widgets!,
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -122,7 +122,7 @@ class CustomDialog extends StatelessWidget {
                         child: Text(cancelButtonTitle ?? 'لا'),
                       ),
                     TextButton(
-                      onPressed: confirmButton,
+                      onPressed: confirmButton as void Function()?,
                       child: Text(confirmButtonTitle ?? 'نعم'),
                     ),
                   ],
@@ -142,9 +142,9 @@ class LoadingScreen extends StatelessWidget {
   final bool half;
   bool small;
   bool scaff;
-  final String message;
+  final String? message;
   LoadingScreen({
-    Key key,
+    Key? key,
     this.half = false,
     this.message,
     this.small = false,
@@ -206,7 +206,7 @@ class LoadingScreen extends StatelessWidget {
                             height: 20,
                           ),
                           Text(
-                            message != null ? message : "Loading...",
+                            message != null ? message! : "Loading...",
                             style: TextStyle(
                               color: Colors.white,
                             ),
@@ -283,7 +283,7 @@ class LoadingScreen extends StatelessWidget {
                           height: 20,
                         ),
                         Text(
-                          message != null ? message : "Loading...",
+                          message != null ? message! : "Loading...",
                           style: facilityTitle.copyWith(
                             color: Colors.white,
                           ),

@@ -10,7 +10,7 @@ class UserPreferences {
 
   UserPreferences._const();
 
-  SharedPreferences prefs;
+  late SharedPreferences prefs;
 
   init() async {
     prefs = await SharedPreferences.getInstance();
@@ -25,9 +25,9 @@ class UserPreferences {
   }
 
   setUser(UserModel user) {
-    prefs.setInt('userId', user.id);
-    prefs.setString('username', user.userName);
-    prefs.setInt('type', user.type);
+    prefs.setInt('userId', user.id!);
+    prefs.setString('username', user.userName!);
+    prefs.setInt('type', user.type!);
   }
 
   deleteUser() {

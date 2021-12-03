@@ -8,7 +8,7 @@ import '../constaint.dart';
 import '../main.dart';
 
 class AddUsers extends StatelessWidget {
-  AddUsers({Key key}) : super(key: key);
+  AddUsers({Key? key}) : super(key: key);
   var formKey = GlobalKey<FormState>();
   var userNameCon = TextEditingController();
   var passCon = TextEditingController();
@@ -68,7 +68,7 @@ class AddUsers extends StatelessWidget {
                       //   FilteringTextInputFormatter.allow(RegExp('7[0-9]*')),
                       // ],
                       validator: (v) {
-                        if (v.isEmpty)
+                        if (v!.isEmpty)
                           return 'required';
                         else if (v.length < 3)
                           return 'less than 3 letters';
@@ -93,7 +93,7 @@ class AddUsers extends StatelessWidget {
                             FilteringTextInputFormatter.deny(RegExp('[أ-ي]')),
                           ],
                           validator: (v) {
-                            if (v.isEmpty)
+                            if (v!.isEmpty)
                               return 'required';
                             else if (v.length < 8)
                               return ' less than 8 characters';
@@ -125,7 +125,7 @@ class AddUsers extends StatelessWidget {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                        if (formKey.currentState.validate()) {
+                        if (formKey.currentState!.validate()) {
                           showDialog(
                               barrierDismissible: false,
                               context: context,

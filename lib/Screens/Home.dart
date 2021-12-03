@@ -11,7 +11,7 @@ import '../Services/LocalDB.dart';
 import '../constaint.dart';
 
 class Home extends StatefulWidget {
-  Home({Key key}) : super(key: key);
+  Home({Key? key}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
@@ -262,7 +262,7 @@ class _HomeState extends State<Home> {
                                     RegExp('.[0-9]*')),
                               ],
                               validator: (v) {
-                                if (v.isEmpty)
+                                if (v!.isEmpty)
                                   return 'required';
                                 // else if (v.length < 9)
                                 //   return ' أقل من 9 أرقام';
@@ -298,9 +298,9 @@ class _HomeState extends State<Home> {
           ElevatedButton(
             onPressed: () async {
               print(
-                  'formKey.currentState.validate() ${formKey.currentState.validate()}');
+                  'formKey.currentState.validate() ${formKey.currentState!.validate()}');
               if (selected != -1 &&
-                  formKey.currentState.validate() &&
+                  formKey.currentState!.validate() &&
                   int.parse(controller.text) != 0) {
                 var result =
                     await LocalDB().appDatabaseCache.invoiceDAO.insertInvoice(

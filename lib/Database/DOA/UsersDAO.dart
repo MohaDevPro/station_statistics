@@ -9,13 +9,13 @@ abstract class UserDAO {
 
   @Query(
       "SELECT * FROM User where userName = :userName And password = :password")
-  Future<User> getUser(String userName, String password);
+  Future<User?> getUser(String userName, String password);
 
   @Query("SELECT * FROM User where userName = :userName")
-  Future<User> getUserByUsername(String userName);
+  Future<User?> getUserByUsername(String userName);
 
   @Query("SELECT * FROM User where type = :type")
-  Future<User> getUserByType(int type);
+  Future<User?> getUserByType(int type);
 
   // @Query("SELECT * FROM UsersE where id=:id")
   // Stream<UsersE> getAllUsersEbyid(int id);

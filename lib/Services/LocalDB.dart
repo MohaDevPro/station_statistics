@@ -8,7 +8,7 @@ class LocalDB {
 
   LocalDB._const();
 
-  AppDatabase appDatabaseCache;
+  late AppDatabase appDatabaseCache;
   init() async {
     appDatabaseCache =
         await $FloorAppDatabase.databaseBuilder('database.db').build();

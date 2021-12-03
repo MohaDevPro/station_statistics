@@ -49,11 +49,11 @@ class MyApp extends StatelessWidget {
 
 InputDecoration inputStyle(
     {bool isFocused = false,
-    String helperText,
-    String labelText,
-    String hintText,
-    Widget prefixIcon,
-    Widget suffixIcon}) {
+    String? helperText,
+    String? labelText,
+    String? hintText,
+    Widget? prefixIcon,
+    Widget? suffixIcon}) {
   return InputDecoration(
     filled: true,
     border: outlineInputBorder,

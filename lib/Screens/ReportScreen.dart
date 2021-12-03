@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -29,7 +30,7 @@ class _ReportState extends State<Report> {
   var isRotate = false;
   // var isExcel = true;
   // var isPdf = false;
-  int radio = 1;
+  int? radio = 1;
   @override
   void dispose() {
     SystemChrome.setPreferredOrientations([
@@ -115,12 +116,13 @@ class _ReportState extends State<Report> {
                         widgets: [
                           TextButton.icon(
                               onPressed: () async {
-                                var date = await showDatePicker(
-                                    context: context,
-                                    initialDate:
-                                        DateTime(now.year, now.month, 1),
-                                    firstDate: DateTime(2021, 1, 1),
-                                    lastDate: DateTime.now());
+                                var date = await (showDatePicker(
+                                        context: context,
+                                        initialDate:
+                                            DateTime(now.year, now.month, 1),
+                                        firstDate: DateTime(2021, 1, 1),
+                                        lastDate: DateTime.now())
+                                    as FutureOr<DateTime>);
                                 from = DateTime(date.year, date.month, date.day,
                                         23, 59, 59)
                                     .microsecondsSinceEpoch;
@@ -129,11 +131,12 @@ class _ReportState extends State<Report> {
                               label: Text("Date from")),
                           TextButton.icon(
                               onPressed: () async {
-                                var date = await showDatePicker(
-                                    context: context,
-                                    initialDate: now,
-                                    firstDate: DateTime(2021),
-                                    lastDate: DateTime.now());
+                                var date = await (showDatePicker(
+                                        context: context,
+                                        initialDate: now,
+                                        firstDate: DateTime(2021),
+                                        lastDate: DateTime.now())
+                                    as FutureOr<DateTime>);
                                 to = DateTime(date.year, date.month, date.day,
                                         23, 59, 59)
                                     .microsecondsSinceEpoch;
@@ -201,26 +204,26 @@ class _ReportState extends State<Report> {
                                   text: 'Total Price',
                                 ),
                               ]),
-                              for (int i = 0; i < snapshot.data.length; i++)
+                              for (int i = 0; i < snapshot.data!.length; i++)
                                 TableRow(children: [
                                   CellTable(
                                     text: '${i + 1}',
                                   ),
                                   CellTable(
                                     text:
-                                        '${formatter.format(DateTime.fromMicrosecondsSinceEpoch(snapshot.data[i].timeStamp))}',
+                                        '${formatter.format(DateTime.fromMicrosecondsSinceEpoch(snapshot.data![i].timeStamp!))}',
                                   ),
                                   CellTable(
-                                    text: '${snapshot.data[i].quantity}',
+                                    text: '${snapshot.data![i].quantity}',
                                   ),
                                   CellTable(
-                                    text: '${snapshot.data[i].type}',
+                                    text: '${snapshot.data![i].type}',
                                   ),
                                   CellTable(
-                                    text: '${snapshot.data[i].price}',
+                                    text: '${snapshot.data![i].price}',
                                   ),
                                   CellTable(
-                                    text: '${snapshot.data[i].totalPrice}',
+                                    text: '${snapshot.data![i].totalPrice}',
                                   ),
                                 ]),
                             ],
@@ -238,7 +241,7 @@ class _ReportState extends State<Report> {
                               Radio(
                                   value: 1,
                                   groupValue: radio,
-                                  onChanged: (v) {
+                                  onChanged: (dynamic v) {
                                     setState(() {
                                       print(
                                           "============= Value = ${v} ===========");
@@ -253,7 +256,7 @@ class _ReportState extends State<Report> {
                               Radio(
                                   value: 2,
                                   groupValue: radio,
-                                  onChanged: (v) {
+                                  onChanged: (dynamic v) {
                                     setState(() {
                                       radio = v;
                                     });
@@ -310,7 +313,7 @@ class _ReportState extends State<Report> {
                               fontFamily: getFontFamily(FontFamily.Calibri),
                             );
 
-                            excel.tables['Sheet1'].appendRow([
+                            excel.tables['Sheet1']!.appendRow([
                               "#",
                               "Date",
                               "Quantity",
@@ -319,37 +322,37 @@ class _ReportState extends State<Report> {
                               "Total Price"
                             ]);
 
-                            excel.tables['Sheet1'].updateCell(
+                            excel.tables['Sheet1']!.updateCell(
                                 CellIndex.indexByColumnRow(
                                     rowIndex: 0, columnIndex: 0),
                                 '#',
                                 cellStyle: cellStyle);
 
-                            excel.tables['Sheet1'].updateCell(
+                            excel.tables['Sheet1']!.updateCell(
                                 CellIndex.indexByColumnRow(
                                     rowIndex: 0, columnIndex: 1),
                                 'Date',
                                 cellStyle: cellStyle);
 
-                            excel.tables['Sheet1'].updateCell(
+                            excel.tables['Sheet1']!.updateCell(
                                 CellIndex.indexByColumnRow(
                                     rowIndex: 0, columnIndex: 2),
                                 'Quantity',
                                 cellStyle: cellStyle);
 
-                            excel.tables['Sheet1'].updateCell(
+                            excel.tables['Sheet1']!.updateCell(
                                 CellIndex.indexByColumnRow(
                                     rowIndex: 0, columnIndex: 3),
                                 'Type',
                                 cellStyle: cellStyle);
 
-                            excel.tables['Sheet1'].updateCell(
+                            excel.tables['Sheet1']!.updateCell(
                                 CellIndex.indexByColumnRow(
                                     rowIndex: 0, columnIndex: 4),
                                 'Price For Liter',
                                 cellStyle: cellStyle);
 
-                            excel.tables['Sheet1'].updateCell(
+                            excel.tables['Sheet1']!.updateCell(
                                 CellIndex.indexByColumnRow(
                                     rowIndex: 0, columnIndex: 5),
                                 'Total Price',
@@ -357,72 +360,72 @@ class _ReportState extends State<Report> {
 
                             int index = 1;
 
-                            for (var data in snapshot.data) {
-                              allTotal += data.totalPrice;
-                              excel.tables['Sheet1'].appendRow([
+                            for (var data in snapshot.data!) {
+                              allTotal += data.totalPrice!;
+                              excel.tables['Sheet1']!.appendRow([
                                 index,
                                 formatter
                                     .format(DateTime.fromMicrosecondsSinceEpoch(
-                                        data.timeStamp))
+                                        data.timeStamp!))
                                     .toString(),
                                 data.quantity,
                                 data.type,
                                 data.price,
                                 data.totalPrice,
                               ]);
-                              excel.tables['Sheet1'].updateCell(
+                              excel.tables['Sheet1']!.updateCell(
                                   CellIndex.indexByColumnRow(
                                       rowIndex: index, columnIndex: 0),
                                   index,
                                   cellStyle: cellStyleBody);
-                              excel.tables['Sheet1'].updateCell(
+                              excel.tables['Sheet1']!.updateCell(
                                   CellIndex.indexByColumnRow(
                                       rowIndex: index, columnIndex: 1),
                                   formatter.format(
                                       DateTime.fromMicrosecondsSinceEpoch(
-                                          data.timeStamp)),
+                                          data.timeStamp!)),
                                   cellStyle: cellStyleBody);
 
-                              excel.tables['Sheet1'].updateCell(
+                              excel.tables['Sheet1']!.updateCell(
                                   CellIndex.indexByColumnRow(
                                       rowIndex: index, columnIndex: 2),
                                   data.quantity,
                                   cellStyle: cellStyleBody);
 
-                              excel.tables['Sheet1'].updateCell(
+                              excel.tables['Sheet1']!.updateCell(
                                   CellIndex.indexByColumnRow(
                                       rowIndex: index, columnIndex: 3),
                                   data.type,
                                   cellStyle: cellStyleBody);
 
-                              excel.tables['Sheet1'].updateCell(
+                              excel.tables['Sheet1']!.updateCell(
                                   CellIndex.indexByColumnRow(
                                       rowIndex: index, columnIndex: 4),
                                   data.price,
                                   cellStyle: cellStyleBody);
 
-                              excel.tables['Sheet1'].updateCell(
+                              excel.tables['Sheet1']!.updateCell(
                                   CellIndex.indexByColumnRow(
                                       rowIndex: index, columnIndex: 5),
                                   data.totalPrice,
                                   cellStyle: cellStyleBody);
                               index++;
                             }
-                            excel.tables['Sheet1'].appendRow(['']);
-                            excel.tables['Sheet1'].appendRow(['']);
+                            excel.tables['Sheet1']!.appendRow(['']);
+                            excel.tables['Sheet1']!.appendRow(['']);
                             //====================== All Total ====================================
                             // excel.tables['Sheet1'].appendRow([
                             //   'Total ',
                             //   allTotal,
                             // ]);
 
-                            excel.tables['Sheet1'].updateCell(
+                            excel.tables['Sheet1']!.updateCell(
                                 CellIndex.indexByColumnRow(
                                     rowIndex: index, columnIndex: 4),
                                 'Full Total',
                                 cellStyle: cellStyleTotal);
 
-                            excel.tables['Sheet1'].updateCell(
+                            excel.tables['Sheet1']!.updateCell(
                                 CellIndex.indexByColumnRow(
                                     rowIndex: index, columnIndex: 5),
                                 allTotal,
@@ -434,7 +437,7 @@ class _ReportState extends State<Report> {
                               Directory appDocDir =
                                   await getApplicationDocumentsDirectory();
                               String appDocPath = appDocDir.path;
-                              var bytes = excel.encode();
+                              var bytes = excel.encode()!;
                               f = File(join("$appDocPath/Report.xlsx"))
                                 ..createSync(recursive: true)
                                 ..writeAsBytesSync(bytes);
@@ -446,9 +449,9 @@ class _ReportState extends State<Report> {
                                 text: 'Share Excel Report');
                             for (var table in excel.tables.keys) {
                               print(table); //sheet Name
-                              print(excel.tables[table].maxCols);
-                              print(excel.tables[table].maxRows);
-                              for (var row in excel.tables[table].rows) {
+                              print(excel.tables[table]!.maxCols);
+                              print(excel.tables[table]!.maxRows);
+                              for (var row in excel.tables[table]!.rows) {
                                 print("row $row");
                               }
                             }
@@ -489,7 +492,7 @@ class _ReportState extends State<Report> {
   }
 
   Future<Uint8List> buildPdf(
-      PdfPageFormat pageFormat, List<Invoice> data) async {
+      PdfPageFormat pageFormat, List<Invoice>? data) async {
     // Create a PDF document.
     final doc = pw.Document();
 
@@ -506,7 +509,7 @@ class _ReportState extends State<Report> {
         // footer: _buildFooter,
         build: (context) => [
           // _contentHeader(context),
-          _contentTable(context, data),
+          _contentTable(context, data!),
           pw.SizedBox(height: 20),
           _contentFooter(context, allTotal),
           pw.SizedBox(height: 20),
@@ -519,7 +522,8 @@ class _ReportState extends State<Report> {
     return doc.save();
   }
 
-  Future<File> _saveAsFile(PdfPageFormat pageFormat, List<Invoice> data) async {
+  Future<File> _saveAsFile(
+      PdfPageFormat pageFormat, List<Invoice>? data) async {
     final bytes = await buildPdf(pageFormat, data);
 
     final appDocDir = await getApplicationDocumentsDirectory();
@@ -650,9 +654,9 @@ class _ReportState extends State<Report> {
         tableHeaders.length,
         (col) => tableHeaders[col],
       ),
-      data: List<List<String>>.generate(
+      data: List<List<String?>>.generate(
         data.length,
-        (row) => List<String>.generate(
+        (row) => List<String?>.generate(
           tableHeaders.length,
           (col) => data[row].getIndex(col, row),
         ),
@@ -665,9 +669,9 @@ class HeaderTable extends StatelessWidget {
   var HeaderStyle =
       TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white);
   var txtStyle = TextStyle(fontWeight: FontWeight.bold, color: Colors.black);
-  final String text;
+  final String? text;
 
-  HeaderTable({Key key, this.text}) : super(key: key);
+  HeaderTable({Key? key, this.text}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return TableCell(
@@ -676,7 +680,7 @@ class HeaderTable extends StatelessWidget {
         color: Colors.green,
         child: Center(
           child: Text(
-            text,
+            text!,
             style: HeaderStyle,
           ),
         ),
@@ -689,9 +693,9 @@ class CellTable extends StatelessWidget {
   var HeaderStyle = TextStyle(
       fontWeight: FontWeight.normal, fontSize: 15, color: Colors.black);
   var txtStyle = TextStyle(fontWeight: FontWeight.bold, color: Colors.black);
-  final String text;
+  final String? text;
 
-  CellTable({Key key, this.text}) : super(key: key);
+  CellTable({Key? key, this.text}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return TableCell(
@@ -700,7 +704,7 @@ class CellTable extends StatelessWidget {
         color: Colors.white,
         child: Center(
           child: Text(
-            text,
+            text!,
             style: HeaderStyle,
           ),
         ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
@@ -9,12 +10,12 @@ import 'package:station_statistics/Database/Entities/Invoices.dart';
 
 class PDFController {
   Future<Uint8List> buildPdf(
-      PdfPageFormat pageFormat, List<Invoice> data, int invoiceNumber) async {
+      PdfPageFormat pageFormat, List<Invoice> data, int? invoiceNumber) async {
     // Create a PDF document.
     final doc = pw.Document();
     var allTotal = 0.0;
     for (var d in data) {
-      allTotal += d.totalPrice;
+      allTotal += d.totalPrice!;
     }
     // _logo = await rootBundle.loadString('assets/logo.svg');
     // _bgShape = await rootBundle.loadString('assets/invoice.svg');
@@ -42,30 +43,42 @@ class PDFController {
     return doc.save();
   }
 
-  Future<File> saveAsFile(
-      PdfPageFormat pageFormat, List<Invoice> data, int invoiceNumber) async {
+  Future<File> saveAsFile(PdfPageFormat pageFormat, List<Invoice> data,
+      int invoiceNumber, String outputFile) async {
     final bytes = await buildPdf(pageFormat, data, invoiceNumber);
-
+    String? outputFile = await FilePicker.platform.getDirectoryPath();
     final appDocDir = await getApplicationDocumentsDirectory();
     final appDocPath = appDocDir.path;
-    final file = File(appDocPath + '/' + 'Report.pdf');
+    final file = File(outputFile! + '/' + 'Report.pdf');
     print('Save as file ${file.path} ...');
     await file.writeAsBytes(bytes);
+    saveAsFileToPhone(file);
     return file;
   }
 
-  Future<void> saveAsFileToPhone(PdfPageFormat pageFormat, List<Invoice> data,
-      int invoiceNumber, String path) async {
-    final appDocDir = await getApplicationDocumentsDirectory();
-    final appDocPath = appDocDir.path;
-    final bytes = await buildPdf(pageFormat, data, invoiceNumber);
-    final file = File(path + '/' + 'Report.pdf');
-    file
-      ..openWrite()
-      ..writeAsBytes(bytes);
-    // print('Save as file ${file.path} ...');
-    // await file.copy(path + '/' + 'Report.pdf');
+  Future<void> saveAsFileToPhone(File file) async {
+    // final appDocDir = await getApplicationDocumentsDirectory();
+    // final appDocPath = appDocDir.path;
+    // final bytes = await buildPdf(pageFormat, data, invoiceNumber);
+    // final file = File(path + '/' + 'Report.pdf');
+    await file.create();
+    // file.writeAsBytes(bytes);
+
+    var f = await file.open(mode: FileMode.write);
   }
+  // Future<void> saveAsFileToPhone(PdfPageFormat pageFormat, List<Invoice> data,
+  //      int? invoiceNumber, String path) async {
+  //    final appDocDir = await getApplicationDocumentsDirectory();
+  //    final appDocPath = appDocDir.path;
+  //    final bytes = await buildPdf(pageFormat, data, invoiceNumber);
+  //    final file = File(path + '/' + 'Report.pdf');
+  //    await file.create();
+  //    file.writeAsBytes(bytes);
+  //
+  //    var f = await file.open(mode: FileMode.write);
+  //    // print('Save as file ${file.path} ...');
+  //    // await file.copy(path + '/' + 'Report.pdf');
+  //  }
 
   pw.PageTheme _buildTheme(
     PdfPageFormat pageFormat,
@@ -185,9 +198,9 @@ class PDFController {
         tableHeaders.length,
         (col) => tableHeaders[col],
       ),
-      data: List<List<String>>.generate(
+      data: List<List<String?>>.generate(
         data.length,
-        (row) => List<String>.generate(
+        (row) => List<String?>.generate(
           tableHeaders.length,
           (col) => data[row].getIndex(col, row),
         ),
@@ -227,7 +240,7 @@ class PDFController {
   //   }
   //   return file;
   // }
-  pw.Widget _buildHeader(pw.Context context, int invoiceNumber) {
+  pw.Widget _buildHeader(pw.Context context, int? invoiceNumber) {
     return pw.Column(
       children: [
         pw.Row(
@@ -261,7 +274,7 @@ class PDFController {
                     height: 50,
                     child: pw.DefaultTextStyle(
                       style: pw.TextStyle(
-                        color: _darkColor,
+                        color: PdfColors.white,
                         fontSize: 12,
                       ),
                       child: pw.GridView(
