@@ -42,14 +42,14 @@ class PDFPreview extends StatelessWidget {
   }
 
   static const Map<String, PdfPageFormat> pageFormats = {
-    "A6": PdfPageFormat.a6, "A5": PdfPageFormat.a5, "A4": PdfPageFormat.a4,
+    "A6": PdfPageFormat.a6,
+    "A5": PdfPageFormat.a5,
+    "A4": PdfPageFormat.a4,
     "A3": PdfPageFormat.a3,
     "letter": PdfPageFormat.letter,
     "legal": PdfPageFormat.legal,
     "roll57": PdfPageFormat.roll57,
     "roll80": PdfPageFormat.roll80,
-    // "standard": PdfPageFormat.standard,
-    // "undefined": PdfPageFormat.undefined,
   };
   String? date;
   String _formatDate(DateTime date) {
