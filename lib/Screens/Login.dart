@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/route_manager.dart';
 import 'package:station_statistics/Screens/Home.dart';
-import 'package:station_statistics/Screens/User.dart';
+import 'package:station_statistics/Services/LocalDB.dart';
 import 'package:station_statistics/Services/user_preferences.dart';
 
-import '../Services/LocalDB.dart';
 import '../constaint.dart';
 import '../main.dart';
+import 'User.dart';
 
 class Login extends StatelessWidget {
   Login({Key? key}) : super(key: key);
@@ -143,14 +143,30 @@ class Login extends StatelessWidget {
                                   .userDAO
                                   .getUser(userNameCon.text, passCon.text);
                               print("result $result");
-
-                              if (result != null) {
+                              if (result != false) {
                                 Navigator.pop(context);
                                 userPreferences.setUser(UserModel(
-                                  id: result.id,
-                                  userName: result.userName,
+                                  id: result!.id,
+                                  userName: userNameCon.text,
                                   type: result.type,
                                 ));
+                                // var result = await DatabaseServices().validUser2(
+                                //     username: userNameCon.text,
+                                //     password: passCon.text);
+                                // var user = await LocalDB()
+                                //     .appDatabaseCache
+                                //     .userDAO
+                                //     .insertUser(User(
+                                //       type: result!.type,
+                                //       userName: userNameCon.text,
+                                //     ));
+                                // if (result != false) {
+                                //   Navigator.pop(context);
+                                //   userPreferences.setUser(UserModel(
+                                //     id: user,
+                                //     userName: userNameCon.text,
+                                //     type: result["type"],
+                                //   ));
                                 Get.off(() => Home());
                               } else {
                                 Navigator.pop(context);

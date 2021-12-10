@@ -33,7 +33,7 @@ class PDFController {
           // _contentHeader(context),
           _contentTable(context, data),
           pw.SizedBox(height: 20),
-          _contentFooter(context, allTotal),
+          _contentFooter(context, allTotal, invoiceNumber),
           pw.SizedBox(height: 20),
           // _termsAndConditions(context),
         ],
@@ -97,7 +97,8 @@ class PDFController {
   static const baseColor = PdfColors.teal;
   static const accentColor = PdfColors.blueGrey900;
   static const _darkColor = PdfColors.blueGrey800;
-  pw.Widget _contentFooter(pw.Context context, double _total) {
+  pw.Widget _contentFooter(pw.Context context, double _total,
+      [int? invoiceNumber = 0]) {
     return pw.Row(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
@@ -141,6 +142,17 @@ class PDFController {
                     ],
                   ),
                 ),
+                pw.SizedBox(height: 20),
+                pw.Center(
+                  child: pw.BarcodeWidget(
+                    data:
+                        'Invoice: ${invoiceNumber.toString()} \n Date: ${_formatDate(DateTime.now())} \n User: ${UserPreferences().getUser().userName}',
+                    width: 60,
+                    height: 60,
+                    barcode: pw.Barcode.qrCode(),
+                    drawText: false,
+                  ),
+                ),
               ],
             ),
           ),
@@ -163,7 +175,7 @@ class PDFController {
     var accentColor = PdfColors.blueGrey900;
     return pw.Table.fromTextArray(
       border: null,
-      cellAlignment: pw.Alignment.centerLeft,
+      cellAlignment: pw.Alignment.center,
       headerDecoration: pw.BoxDecoration(
         borderRadius: const pw.BorderRadius.all(pw.Radius.circular(2)),
         color: baseColor,
@@ -271,7 +283,7 @@ class PDFController {
                       color: accentColor,
                     ),
                     padding: const pw.EdgeInsets.only(
-                        left: 40, top: 10, bottom: 10, right: 20),
+                        left: 10, top: 10, bottom: 10, right: 10),
                     alignment: pw.Alignment.centerLeft,
                     height: 70,
                     child: pw.DefaultTextStyle(
@@ -282,31 +294,16 @@ class PDFController {
                       child: pw.GridView(
                         crossAxisCount: 2,
                         children: [
-                          pw.Text('User'),
-                          pw.Text("${UserPreferences().getUser().userName}"),
                           pw.Text(
                               '${invoiceNumber == null ? "Report" : "Invoice #"}'),
                           pw.Text("${invoiceNumber ?? ""}"),
+                          pw.Text('User'),
+                          pw.Text("${UserPreferences().getUser().userName}"),
                           pw.Text('Date:'),
                           pw.Text(date ?? _formatDate(DateTime.now())),
                         ],
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            pw.Expanded(
-              child: pw.Column(
-                mainAxisSize: pw.MainAxisSize.min,
-                children: [
-                  pw.BarcodeWidget(
-                    data:
-                        'Invoice: ${invoiceNumber.toString()} \n Date: ${_formatDate(DateTime.now())} \n User: ${UserPreferences().getUser().userName}',
-                    width: 60,
-                    height: 60,
-                    barcode: pw.Barcode.qrCode(),
-                    drawText: false,
                   ),
                 ],
               ),

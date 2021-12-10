@@ -366,7 +366,7 @@ class _ReportState extends State<Report> {
                                 cellStyle: cellStyle);
 
                             int index = 1;
-
+                            allTotal = 0;
                             for (var data in snapshot.data!) {
                               allTotal += data.totalPrice!;
                               excel.tables['Sheet1']!.appendRow([

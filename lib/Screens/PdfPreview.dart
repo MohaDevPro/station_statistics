@@ -70,15 +70,19 @@ class PDFPreview extends StatelessWidget {
         elevation: 0,
       ),
       body: FutureBuilder(
-        future: PDFController()
-            .buildPdf(PdfPageFormat.a4, data!, invoiceNumber, date: date),
+        future: PDFController().buildPdf(
+            PdfPageFormat.letter,
+            // PdfPageFormat(80 * 72.0 / 25.4, 1000, marginAll: 5 * 72.0 / 25.4),
+            data!,
+            invoiceNumber,
+            date: date),
         builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
           if (snapshot.hasData) {
             return PdfPreview(
               maxPageWidth: 700,
               build: (format) => snapshot.data!,
               canDebug: false,
-              canChangeOrientation: false,
+              canChangeOrientation: false, canChangePageFormat: false,
               pageFormats: pageFormats,
               // actions: [
               //   PdfPreviewAction(

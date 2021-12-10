@@ -2,7 +2,7 @@ import 'package:floor/floor.dart';
 
 @entity
 class User {
-  @PrimaryKey()
+  @PrimaryKey(autoGenerate: true)
   final int? id;
   String? userName;
   String? password;

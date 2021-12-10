@@ -206,10 +206,10 @@ class LoadingScreen extends StatelessWidget {
                             height: 20,
                           ),
                           Text(
-                            message != null ? message! : "Loading...",
+                            message != null ? message! : "...Loading",
                             style: TextStyle(
-                              color: Colors.white,
-                            ),
+                                color: Colors.white,
+                                fontStyle: FontStyle.normal),
                           )
                         ],
                       ),

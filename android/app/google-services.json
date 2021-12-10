@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "287029793266",
+    "firebase_url": "https://station-statistics-default-rtdb.firebaseio.com",
+    "project_id": "station-statistics",
+    "storage_bucket": "station-statistics.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:287029793266:android:85a5017f89cdb83ba71b6b",
+        "android_client_info": {
+          "package_name": "moha.devitpro.station_statistics"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "287029793266-sillu1dipl0gkh59alj76qlbmgtkim9o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHiwAI0czY_7JoYA99x4e0LVv_-BCxRkQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "287029793266-sillu1dipl0gkh59alj76qlbmgtkim9o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
