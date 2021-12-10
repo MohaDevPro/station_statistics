@@ -10,13 +10,6 @@ import 'Services/LocalDB.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp();
-  // FirebaseFirestore firestore = FirebaseFirestore.instance;
-  // var d = DatabaseServices();
-  // var u = await d.getAllUsers();
-  // if (u.isEmpty) {
-  //   await d.addUser("admin", "12345678", 0);
-  // }
   await LocalDB().init();
   print("UserPreferences userPreferences = UserPreferences();");
   await UserPreferences().init();

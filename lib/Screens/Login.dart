@@ -150,23 +150,6 @@ class Login extends StatelessWidget {
                                   userName: userNameCon.text,
                                   type: result.type,
                                 ));
-                                // var result = await DatabaseServices().validUser2(
-                                //     username: userNameCon.text,
-                                //     password: passCon.text);
-                                // var user = await LocalDB()
-                                //     .appDatabaseCache
-                                //     .userDAO
-                                //     .insertUser(User(
-                                //       type: result!.type,
-                                //       userName: userNameCon.text,
-                                //     ));
-                                // if (result != false) {
-                                //   Navigator.pop(context);
-                                //   userPreferences.setUser(UserModel(
-                                //     id: user,
-                                //     userName: userNameCon.text,
-                                //     type: result["type"],
-                                //   ));
                                 Get.off(() => Home());
                               } else {
                                 Navigator.pop(context);
