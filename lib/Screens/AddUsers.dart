@@ -21,7 +21,7 @@ class AddUsers extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text('إضافة مستخدم'),
+        title: Text('Add User'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -59,8 +59,8 @@ class AddUsers extends StatelessWidget {
                     TextFormField(
                       controller: userNameCon,
                       decoration: inputStyle(
-                          labelText: "اسم المستخدم",
-                          helperText: "اسم المستخدم",
+                          labelText: "Username",
+                          helperText: "Username",
                           prefixIcon: Icon(Icons.text_fields)),
                       autofocus: true,
                       focusNode: userFN,
@@ -69,9 +69,9 @@ class AddUsers extends StatelessWidget {
                       // ],
                       validator: (v) {
                         if (v!.isEmpty)
-                          return 'حقل مطلوب';
+                          return 'required';
                         else if (v.length < 3)
-                          return 'أقل من 3 حروف';
+                          return 'less than 3 letters';
                         else
                           return null;
                       },
@@ -94,17 +94,17 @@ class AddUsers extends StatelessWidget {
                           ],
                           validator: (v) {
                             if (v!.isEmpty)
-                              return 'حقل مطلوب';
+                              return 'required';
                             else if (v.length < 8)
-                              return ' أقل من 8 رموز';
+                              return ' less than 8 characters';
                             else
                               return null;
                           },
                           autofocus: true,
                           focusNode: passFN,
                           decoration: inputStyle(
-                            labelText: "كلمة المرور",
-                            helperText: "كلمة المرور",
+                            labelText: "Password",
+                            helperText: "Password",
                             prefixIcon: Icon(Icons.lock),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -153,13 +153,13 @@ class AddUsers extends StatelessWidget {
                                 barrierDismissible: false,
                                 context: context,
                                 builder: (context) => CustomDialog(
-                                  // message: 'Done add user successfully',
-                                  message: 'تم إضافة المستخدم بنجاح',
+                                  message: 'Done add user successfully',
+                                  // message: 'تم إضافة المستخدم بنجاح',
                                   confirmButton: () {
                                     Navigator.pop(context);
                                   },
                                   cancelButton: false,
-                                  confirmButtonTitle: 'حسناً',
+                                  confirmButtonTitle: 'Ok',
                                   color: Color(0xFF2BBF8A),
                                 ),
                               );
@@ -167,13 +167,13 @@ class AddUsers extends StatelessWidget {
                               showDialog(
                                 context: context,
                                 builder: (context) => CustomDialog(
-                                  message: 'فشل الحفظز حاول مرة أخرى',
+                                  message: 'Field to save. Try again',
                                   confirmButton: () {
                                     Get.back();
                                   },
                                   cancelButton: false,
                                   color: Colors.redAccent,
-                                  confirmButtonTitle: 'حسناً',
+                                  confirmButtonTitle: 'Ok',
                                   icon: Icons.cancel,
                                 ),
                               );
@@ -184,13 +184,14 @@ class AddUsers extends StatelessWidget {
                               barrierDismissible: false,
                               context: context,
                               builder: (context) => CustomDialog(
-                                message: 'اسم المستخدم موجود بالفعل',
-                                // message: 'Username already exist',
+                                // message:
+                                //     'اسم المستخدم موجود بالفعل',
+                                message: 'Username already exist',
                                 confirmButton: () {
                                   Navigator.pop(context);
                                 },
                                 cancelButton: false,
-                                confirmButtonTitle: 'حسناً',
+                                confirmButtonTitle: 'Ok',
                               ),
                             );
                           }
@@ -204,7 +205,7 @@ class AddUsers extends StatelessWidget {
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(18.0),
-                        child: Text("ضافة مستخدم"),
+                        child: Text("Login"),
                       ),
                       style: ButtonStyle(
                         elevation: MaterialStateProperty.all(0.0),

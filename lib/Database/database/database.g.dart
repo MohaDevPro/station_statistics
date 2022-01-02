@@ -65,8 +65,6 @@ class _$AppDatabase extends AppDatabase {
 
   InvoiceDAO? _invoiceDAOInstance;
 
-  InvoiceItemDAO? _invoiceItemDAOInstance;
-
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
@@ -86,11 +84,9 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `userName` TEXT, `password` TEXT, `type` INTEGER)');
+            'CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER, `userName` TEXT, `password` TEXT, `type` INTEGER, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Invoice` (`id` INTEGER, `timeStamp` INTEGER, `totalPrice` REAL, `tax` REAL, PRIMARY KEY (`id`))');
-        await database.execute(
-            'CREATE TABLE IF NOT EXISTS `InvoiceItem` (`id` INTEGER, `invoiceID` INTEGER, `type` TEXT, `price` REAL, `quantity` REAL, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `Invoice` (`id` INTEGER, `timeStamp` INTEGER, `type` TEXT, `totalPrice` REAL, `price` REAL, `quantity` REAL, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -106,12 +102,6 @@ class _$AppDatabase extends AppDatabase {
   @override
   InvoiceDAO get invoiceDAO {
     return _invoiceDAOInstance ??= _$InvoiceDAO(database, changeListener);
-  }
-
-  @override
-  InvoiceItemDAO get invoiceItemDAO {
-    return _invoiceItemDAOInstance ??=
-        _$InvoiceItemDAO(database, changeListener);
   }
 }
 
@@ -235,8 +225,10 @@ class _$InvoiceDAO extends InvoiceDAO {
             (Invoice item) => <String, Object?>{
                   'id': item.id,
                   'timeStamp': item.timeStamp,
+                  'type': item.type,
                   'totalPrice': item.totalPrice,
-                  'tax': item.tax
+                  'price': item.price,
+                  'quantity': item.quantity
                 }),
         _invoiceUpdateAdapter = UpdateAdapter(
             database,
@@ -245,8 +237,10 @@ class _$InvoiceDAO extends InvoiceDAO {
             (Invoice item) => <String, Object?>{
                   'id': item.id,
                   'timeStamp': item.timeStamp,
+                  'type': item.type,
                   'totalPrice': item.totalPrice,
-                  'tax': item.tax
+                  'price': item.price,
+                  'quantity': item.quantity
                 }),
         _invoiceDeletionAdapter = DeletionAdapter(
             database,
@@ -255,8 +249,10 @@ class _$InvoiceDAO extends InvoiceDAO {
             (Invoice item) => <String, Object?>{
                   'id': item.id,
                   'timeStamp': item.timeStamp,
+                  'type': item.type,
                   'totalPrice': item.totalPrice,
-                  'tax': item.tax
+                  'price': item.price,
+                  'quantity': item.quantity
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -277,8 +273,10 @@ class _$InvoiceDAO extends InvoiceDAO {
         mapper: (Map<String, Object?> row) => Invoice(
             id: row['id'] as int?,
             timeStamp: row['timeStamp'] as int?,
+            type: row['type'] as String?,
             totalPrice: row['totalPrice'] as double?,
-            tax: row['tax'] as double?));
+            price: row['price'] as double?,
+            quantity: row['quantity'] as double?));
   }
 
   @override
@@ -288,8 +286,10 @@ class _$InvoiceDAO extends InvoiceDAO {
         mapper: (Map<String, Object?> row) => Invoice(
             id: row['id'] as int?,
             timeStamp: row['timeStamp'] as int?,
+            type: row['type'] as String?,
             totalPrice: row['totalPrice'] as double?,
-            tax: row['tax'] as double?),
+            price: row['price'] as double?,
+            quantity: row['quantity'] as double?),
         arguments: [from, to]);
   }
 
@@ -299,8 +299,10 @@ class _$InvoiceDAO extends InvoiceDAO {
         mapper: (Map<String, Object?> row) => Invoice(
             id: row['id'] as int?,
             timeStamp: row['timeStamp'] as int?,
+            type: row['type'] as String?,
             totalPrice: row['totalPrice'] as double?,
-            tax: row['tax'] as double?),
+            price: row['price'] as double?,
+            quantity: row['quantity'] as double?),
         arguments: [id]);
   }
 
@@ -330,155 +332,5 @@ class _$InvoiceDAO extends InvoiceDAO {
   @override
   Future<void> deleteInvoice(Invoice invoice) async {
     await _invoiceDeletionAdapter.delete(invoice);
-  }
-}
-
-class _$InvoiceItemDAO extends InvoiceItemDAO {
-  _$InvoiceItemDAO(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database),
-        _invoiceItemInsertionAdapter = InsertionAdapter(
-            database,
-            'InvoiceItem',
-            (InvoiceItem item) => <String, Object?>{
-                  'id': item.id,
-                  'invoiceID': item.invoiceID,
-                  'type': item.type,
-                  'price': item.price,
-                  'quantity': item.quantity
-                }),
-        _invoiceItemUpdateAdapter = UpdateAdapter(
-            database,
-            'InvoiceItem',
-            ['id'],
-            (InvoiceItem item) => <String, Object?>{
-                  'id': item.id,
-                  'invoiceID': item.invoiceID,
-                  'type': item.type,
-                  'price': item.price,
-                  'quantity': item.quantity
-                }),
-        _invoiceItemDeletionAdapter = DeletionAdapter(
-            database,
-            'InvoiceItem',
-            ['id'],
-            (InvoiceItem item) => <String, Object?>{
-                  'id': item.id,
-                  'invoiceID': item.invoiceID,
-                  'type': item.type,
-                  'price': item.price,
-                  'quantity': item.quantity
-                });
-
-  final sqflite.DatabaseExecutor database;
-
-  final StreamController<String> changeListener;
-
-  final QueryAdapter _queryAdapter;
-
-  final InsertionAdapter<InvoiceItem> _invoiceItemInsertionAdapter;
-
-  final UpdateAdapter<InvoiceItem> _invoiceItemUpdateAdapter;
-
-  final DeletionAdapter<InvoiceItem> _invoiceItemDeletionAdapter;
-
-  @override
-  Future<List<InvoiceItem>> getAllInvoiceItems() async {
-    return _queryAdapter.queryList('SELECT * FROM InvoiceItem',
-        mapper: (Map<String, Object?> row) => InvoiceItem(
-            id: row['id'] as int?,
-            invoiceID: row['invoiceID'] as int?,
-            type: row['type'] as String?,
-            price: row['price'] as double?,
-            quantity: row['quantity'] as double?));
-  }
-
-  @override
-  Future<List<InvoiceItem>> getAllInvoiceItemsInvoiceID(int id) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM InvoiceItem where invoiceID = ?1',
-        mapper: (Map<String, Object?> row) => InvoiceItem(
-            id: row['id'] as int?,
-            invoiceID: row['invoiceID'] as int?,
-            type: row['type'] as String?,
-            price: row['price'] as double?,
-            quantity: row['quantity'] as double?),
-        arguments: [id]);
-  }
-
-  @override
-  Future<List<InvoiceItem>> getAllInvoiceItemsByItemID(int id) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM InvoiceItem where itemID = ?1',
-        mapper: (Map<String, Object?> row) => InvoiceItem(
-            id: row['id'] as int?,
-            invoiceID: row['invoiceID'] as int?,
-            type: row['type'] as String?,
-            price: row['price'] as double?,
-            quantity: row['quantity'] as double?),
-        arguments: [id]);
-  }
-
-  @override
-  Future<InvoiceItem?> getInvoiceItemByInvoiceItemID(int id) async {
-    return _queryAdapter.query('SELECT * FROM InvoiceItem where id = ?1',
-        mapper: (Map<String, Object?> row) => InvoiceItem(
-            id: row['id'] as int?,
-            invoiceID: row['invoiceID'] as int?,
-            type: row['type'] as String?,
-            price: row['price'] as double?,
-            quantity: row['quantity'] as double?),
-        arguments: [id]);
-  }
-
-  @override
-  Future<InvoiceItem?> getInvoiceItemByItemID(int id) async {
-    return _queryAdapter.query('SELECT * FROM InvoiceItem where itemID = ?1',
-        mapper: (Map<String, Object?> row) => InvoiceItem(
-            id: row['id'] as int?,
-            invoiceID: row['invoiceID'] as int?,
-            type: row['type'] as String?,
-            price: row['price'] as double?,
-            quantity: row['quantity'] as double?),
-        arguments: [id]);
-  }
-
-  @override
-  Future<InvoiceItem?> getInvoiceItemByInvoiceID(int id) async {
-    return _queryAdapter.query('SELECT * FROM InvoiceItem where invoiceID = ?1',
-        mapper: (Map<String, Object?> row) => InvoiceItem(
-            id: row['id'] as int?,
-            invoiceID: row['invoiceID'] as int?,
-            type: row['type'] as String?,
-            price: row['price'] as double?,
-            quantity: row['quantity'] as double?),
-        arguments: [id]);
-  }
-
-  @override
-  Future<void> deleteAllInvoiceItems() async {
-    await _queryAdapter.queryNoReturn('DELETE FROM InvoiceItem');
-  }
-
-  @override
-  Future<int> insertInvoiceItem(InvoiceItem invoiceItem) {
-    return _invoiceItemInsertionAdapter.insertAndReturnId(
-        invoiceItem, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<List<int>> insertListInvoiceItem(List<InvoiceItem> invoiceItems) {
-    return _invoiceItemInsertionAdapter.insertListAndReturnIds(
-        invoiceItems, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<void> updateInvoiceItem(InvoiceItem invoiceItem) async {
-    await _invoiceItemUpdateAdapter.update(
-        invoiceItem, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<void> deleteInvoiceItem(InvoiceItem invoiceItem) async {
-    await _invoiceItemDeletionAdapter.delete(invoiceItem);
   }
 }

@@ -57,17 +57,14 @@ class CustomDialog extends StatelessWidget {
               SizedBox(
                 height: 15,
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 13,
-                      fontFamily: "Cairo",
-                      fontWeight: FontWeight.bold),
-                ),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 13,
+                    fontFamily: "Cairo",
+                    fontWeight: FontWeight.bold),
               ),
               SizedBox(
                 height: 15,
@@ -305,14 +302,7 @@ const darkColor = Color(0xFF391847);
 var facilityTitle = TextStyle(
   color: Colors.black,
   fontSize: 14,
-  fontFamily: 'Cairo',
-  fontWeight: FontWeight.w600,
-  height: 1.5,
-);
-var facilityTitleWhite = TextStyle(
-  color: Colors.white,
-  fontSize: 14,
-  fontFamily: 'Cairo',
+  // fontFamily: 'Cairo',
   fontWeight: FontWeight.w600,
   height: 1.5,
 );
