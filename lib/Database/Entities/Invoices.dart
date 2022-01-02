@@ -6,38 +6,34 @@ class Invoice {
   @PrimaryKey()
   final int? id;
   int? timeStamp;
-  String? type;
+  // String? type;
   double? totalPrice;
-  double? price;
-  double? quantity;
-  // bool? isSaved;
+  double? tax;
+  // double? price;
+  // double? quantity;
   Invoice({
     this.id,
     this.timeStamp,
-    this.type,
+    // this.type,
     this.totalPrice,
-    this.price,
-    this.quantity,
-    // this.isSaved,
+    this.tax,
+    // this.price,
+    // this.quantity,
   });
 
   String? getIndex(int index, int row) {
     final intl.DateFormat formatter = intl.DateFormat('yyyy-MM-dd hh:mm:ss');
     switch (index) {
-      case 0:
+      case 3:
         return (row + 1).toString();
-      case 1:
+      case 2:
         return formatter
             .format(DateTime.fromMicrosecondsSinceEpoch(timeStamp!))
             .toString();
-      case 2:
-        return quantity.toString();
-      case 3:
-        return type;
-      case 4:
-        return price.toString();
-      case 5:
+      case 1:
         return totalPrice.toString();
+      case 0:
+        return "% " + tax!.toInt().toString();
     }
     return '';
   }

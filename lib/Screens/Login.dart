@@ -20,41 +20,42 @@ class Login extends StatelessWidget {
   UserPreferences userPreferences = UserPreferences();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.blue.shade400,
-      body: Container(
-        child: Container(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.6,
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade400,
-                      // borderRadius:
-                      //     BorderRadius.vertical(bottom: Radius.circular(35)),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(Get.width * 0.25),
-                      child: Container(
-                        width: 5,
-                        height: 5,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle, color: Colors.white),
-                        child: Image.asset(
-                          "assets/password.png",
-                        ),
-                      ),
-                    )),
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.4,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: Colors.blue.shade400,
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.6,
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(35)),
+                    color: Colors.blue.shade400,
+                    // borderRadius:
+                    //     BorderRadius.vertical(bottom: Radius.circular(35)),
                   ),
+                  child: Padding(
+                    padding: EdgeInsets.all(Get.width * 0.25),
+                    child: Container(
+                      width: 5,
+                      height: 5,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle, color: Colors.white),
+                      child: Image.asset(
+                        "assets/password.png",
+                      ),
+                    ),
+                  )),
+              Container(
+                height: MediaQuery.of(context).size.height * 0.4,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(35)),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
                   child: Form(
                     key: formKey,
                     child: Column(
@@ -65,8 +66,8 @@ class Login extends StatelessWidget {
                         TextFormField(
                           controller: userNameCon,
                           decoration: inputStyle(
-                              labelText: "Username",
-                              helperText: "Username",
+                              labelText: "اسم المستخدم",
+                              helperText: "اسم المستخدم",
                               prefixIcon: Icon(Icons.text_fields)),
                           autofocus: true,
                           focusNode: userFN,
@@ -75,9 +76,9 @@ class Login extends StatelessWidget {
                           // ],
                           validator: (v) {
                             if (v!.isEmpty)
-                              return 'required';
+                              return 'حقل مطلوب';
                             else if (v.length < 3)
-                              return 'less than 3 letters';
+                              return 'أقل من 3 حروف';
                             else
                               return null;
                           },
@@ -101,17 +102,17 @@ class Login extends StatelessWidget {
                               ],
                               validator: (v) {
                                 if (v!.isEmpty)
-                                  return 'required';
+                                  return 'حقل مطلوب';
                                 else if (v.length < 8)
-                                  return ' less than 8 characters';
+                                  return ' أقل من 8 رموز';
                                 else
                                   return null;
                               },
                               autofocus: true,
                               focusNode: passFN,
                               decoration: inputStyle(
-                                labelText: "Password",
-                                helperText: "Password",
+                                labelText: "كلمة المرور",
+                                helperText: "كلمة المرور",
                                 prefixIcon: Icon(Icons.lock),
                                 suffixIcon: IconButton(
                                   icon: Icon(
@@ -143,10 +144,10 @@ class Login extends StatelessWidget {
                                   .userDAO
                                   .getUser(userNameCon.text, passCon.text);
                               print("result $result");
-                              if (result != false) {
+                              if (result != null) {
                                 Navigator.pop(context);
                                 userPreferences.setUser(UserModel(
-                                  id: result!.id,
+                                  id: result.id,
                                   userName: userNameCon.text,
                                   type: result.type,
                                 ));
@@ -157,15 +158,15 @@ class Login extends StatelessWidget {
                                   barrierDismissible: false,
                                   context: context,
                                   builder: (context) => CustomDialog(
-                                    message:
-                                        'Error in login, ensure of username and password',
                                     // message:
-                                    //     'خطأ في تسجيل الدخول تأكد من اسم المستخدم وكلمة السر',
+                                    //     'Error in login, ensure of username and password',
+                                    message:
+                                        'خطأ في تسجيل الدخول تأكد من اسم المستخدم وكلمة السر',
                                     confirmButton: () {
                                       Navigator.pop(context);
                                     },
                                     cancelButton: false,
-                                    confirmButtonTitle: 'Ok',
+                                    confirmButtonTitle: 'حسناً',
                                   ),
                                 );
                               }
@@ -180,7 +181,7 @@ class Login extends StatelessWidget {
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(18.0),
-                            child: Text("Login"),
+                            child: Text("تسجيل الدخول"),
                           ),
                           style: ButtonStyle(
                             elevation: MaterialStateProperty.all(0.0),
@@ -200,8 +201,8 @@ class Login extends StatelessWidget {
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
