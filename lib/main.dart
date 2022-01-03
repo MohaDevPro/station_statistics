@@ -1,3 +1,7 @@
+// ****************************************
+// TODO: Made By Mohammed
+// TODO:  Contact on http://t.me/TechPulseTeam
+// ****************************************
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:station_statistics/Database/Entities/User.dart';
