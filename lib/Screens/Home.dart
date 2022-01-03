@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:station_statistics/Controller/items_controller.dart';
 import 'package:station_statistics/Controller/pdf_preview.dart';
 import 'package:station_statistics/Controller/report_screen.dart';
@@ -52,64 +56,76 @@ class _HomeState extends State<Home> {
                 }),
             actions: [
               IconButton(
+                  icon: Icon(
+                    Icons.image,
+                    textDirection: TextDirection.ltr,
+                  ),
+                  onPressed: () async {
+                    await PickImage.pick();
+                  }),
+              IconButton(
                   icon: Icon(Icons.print),
                   onPressed: () async {
-                    if (itemController.listItemsCart.isNotEmpty) {
-                      var total = 0.0;
-                      for (var i in itemController.listItemsCart) {
-                        total += double.parse(
-                            (i.price! * i.quantity!).toStringAsFixed(2));
+                    if (UserPreferences().prefs.getString("path") != null) {
+                      if (itemController.listItemsCart.isNotEmpty) {
+                        var total = 0.0;
+                        for (var i in itemController.listItemsCart) {
+                          total += double.parse(
+                              (i.price! * i.quantity!).toStringAsFixed(2));
+                        }
+                        var invoice = Invoice(
+                          totalPrice: double.parse(total.toStringAsFixed(2)),
+                          timeStamp: DateTime.now().microsecondsSinceEpoch,
+                          tax: 15.0,
+                        );
+                        var invoiceID = await LocalDB()
+                            .appDatabaseCache
+                            .invoiceDAO
+                            .insertInvoice(invoice);
+                        for (var i in itemController.listItemsCart) {
+                          await LocalDB()
+                              .appDatabaseCache
+                              .invoiceItemDAO
+                              .insertInvoiceItem(
+                                InvoiceItem(
+                                  price: i.price,
+                                  quantity: i.quantity,
+                                  invoiceID: invoiceID,
+                                  type: i.type,
+                                ),
+                              );
+                        }
+                        itemController.clearItems();
                       }
-                      var invoice = Invoice(
-                        totalPrice: double.parse(total.toStringAsFixed(2)),
-                        timeStamp: DateTime.now().microsecondsSinceEpoch,
-                        tax: 15.0,
-                      );
-                      var invoiceID = await LocalDB()
+                      var lastInvoice = await LocalDB()
                           .appDatabaseCache
                           .invoiceDAO
-                          .insertInvoice(invoice);
-                      for (var i in itemController.listItemsCart) {
-                        await LocalDB()
-                            .appDatabaseCache
-                            .invoiceItemDAO
-                            .insertInvoiceItem(
-                              InvoiceItem(
-                                price: i.price,
-                                quantity: i.quantity,
-                                invoiceID: invoiceID,
-                                type: i.type,
-                              ),
-                            );
+                          .getAllInvoices();
+                      if (lastInvoice.isNotEmpty) {
+                        Get.to(
+                            () => PDFPreview(
+                                  data: [
+                                    lastInvoice.last,
+                                  ],
+                                  invoiceNumber: lastInvoice.last.id,
+                                ),
+                            preventDuplicates: true);
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) => CustomDialog(
+                            message: "لا يوجد فواتير",
+                            color: Colors.blue.shade300,
+                            confirmButton: () {
+                              Get.back();
+                            },
+                            cancelButton: false,
+                            confirmButtonTitle: "حسناً",
+                          ),
+                        );
                       }
-                      itemController.clearItems();
-                    }
-                    var lastInvoice = await LocalDB()
-                        .appDatabaseCache
-                        .invoiceDAO
-                        .getAllInvoices();
-                    if (lastInvoice.isNotEmpty) {
-                      Get.to(
-                          () => PDFPreview(
-                                data: [
-                                  lastInvoice.last,
-                                ],
-                                invoiceNumber: lastInvoice.last.id,
-                              ),
-                          preventDuplicates: true);
                     } else {
-                      showDialog(
-                        context: context,
-                        builder: (context) => CustomDialog(
-                          message: "لا يوجد فواتير",
-                          color: Colors.blue.shade300,
-                          confirmButton: () {
-                            Get.back();
-                          },
-                          cancelButton: false,
-                          confirmButtonTitle: "حسناً",
-                        ),
-                      );
+                      await PickImage.pick();
                     }
                   }),
               IconButton(
@@ -559,5 +575,29 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
+  }
+}
+
+class PickImage {
+  static Future pick() async {
+    final ImagePicker _picker = ImagePicker();
+    // Pick an image
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    var dir = await getApplicationDocumentsDirectory();
+
+    if (image != null) {
+      print(image.path.split(".").last);
+      var path = dir.path + "/" + image.path;
+      // var r = await Directory(dir.path).delete(recursive: true);
+      // print("Directory(path).de $r");
+      UserPreferences().prefs.setString("path", path);
+      if (await Directory(path).exists()) {
+        print("existsc");
+        await image.saveTo(path);
+      } else {
+        await File(path).create(recursive: true);
+        await image.saveTo(path);
+      }
+    }
   }
 }

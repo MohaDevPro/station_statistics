@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
+import 'package:get/route_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
@@ -17,6 +18,12 @@ class PDFController {
       PdfPageFormat pageFormat, List<Invoice> data, int? invoiceNumber,
       {String? date}) async {
     List<InvoiceItem> itemInvoiceVM = [];
+    print("UserPreferences().prefs.getString("
+        ")! ${UserPreferences().prefs.getString("path")!}");
+    var f = File(UserPreferences().prefs.getString("path")!);
+    Uint8List bytes = f.readAsBytesSync();
+    print("UserPreferences().prefs.getString("
+        ")! ${UserPreferences().prefs.getString("path")!}");
     if (data.length == 1 && invoiceNumber != null) {
       print("length Done");
       List<InvoiceItem> itemInvoices = await LocalDB()
@@ -46,24 +53,67 @@ class PDFController {
 
     // Add page to the PDF
     doc.addPage(
-      pw.MultiPage(
-        pageTheme: _buildTheme(pageFormat, myFont),
-        header: (context) => _buildHeader(context, invoiceNumber, myFont),
-        // footer: _buildFooter,
-        build: (context) => [
-          // _contentHeader(context),
-          _contentTable(context, data, myFont),
-          if (itemInvoiceVM.isNotEmpty) pw.SizedBox(height: 5),
-          if (itemInvoiceVM.isNotEmpty)
-            _contentSmallTable(context, itemInvoiceVM, myFont),
-          pw.SizedBox(height: 5),
-          pw.Directionality(
-              textDirection: pw.TextDirection.rtl,
-              child: _contentFooter(context, data, myFont)),
-          pw.SizedBox(height: 5),
-          // _termsAndConditions(context),
-        ],
-      ),
+      pageFormat.height == double.infinity
+          ? pw.Page(
+              // pageTheme: _buildTheme(pageFormat, myFont),
+              pageFormat: pageFormat,
+              build: (context) => pw.Column(children: [
+                // imageContainer(bytes),
+                _buildHeader(context, invoiceNumber, myFont, bytes),
+                // _contentHeader(context),
+                _contentTable(context, data, myFont),
+                if (itemInvoiceVM.isNotEmpty) pw.SizedBox(height: 5),
+                if (itemInvoiceVM.isNotEmpty)
+                  _contentSmallTable(context, itemInvoiceVM, myFont),
+                pw.SizedBox(height: 5),
+                pw.Directionality(
+                    textDirection: pw.TextDirection.rtl,
+                    child: _contentFooter(context, data, myFont)),
+                pw.SizedBox(height: 10),
+                //                 pw.SizedBox(height: 20),
+                pw.BarcodeWidget(
+                  data:
+                      'فاتورة: ${invoiceNumber.toString()} \n التاريخ: ${_formatDate(DateTime.now())} \n المستخدم: ${UserPreferences().getUser().userName}',
+                  width: 60,
+                  height: 60,
+                  barcode: pw.Barcode.qrCode(),
+                  drawText: true,
+                ),
+                pw.SizedBox(height: 10),
+                // _termsAndConditions(context),
+              ]),
+            )
+          : pw.MultiPage(
+              pageTheme: _buildTheme(pageFormat, myFont),
+              header: (context) =>
+                  _buildHeader(context, invoiceNumber, myFont, bytes),
+              // footer: _buildFooter,
+              build: (context) => [
+                // _contentHeader(context),
+
+                _contentTable(context, data, myFont),
+                if (itemInvoiceVM.isNotEmpty) pw.SizedBox(height: 5),
+                if (itemInvoiceVM.isNotEmpty)
+                  _contentSmallTable(context, itemInvoiceVM, myFont),
+                pw.SizedBox(height: 5),
+                pw.Directionality(
+                    textDirection: pw.TextDirection.rtl,
+                    child: _contentFooter(context, data, myFont)),
+                pw.SizedBox(height: 10),
+                //                 pw.SizedBox(height: 20),
+                pw.Center(
+                  child: pw.BarcodeWidget(
+                    data:
+                        'فاتورة: ${invoiceNumber.toString()} \n التاريخ: ${_formatDate(DateTime.now())} \n المستخدم: ${UserPreferences().getUser().userName}',
+                    width: 60,
+                    height: 60,
+                    barcode: pw.Barcode.qrCode(),
+                    drawText: true,
+                  ),
+                ),
+                pw.SizedBox(height: 10),
+              ],
+            ),
     );
 
     return doc.save();
@@ -319,12 +369,24 @@ class PDFController {
     return format.format(date);
   }
 
-  pw.Widget _buildHeader(pw.Context context, int? invoiceNumber, Font? myFont,
+  Widget imageContainer(Uint8List bytes) {
+    return pw.Container(
+      width: Get.width / 4,
+      height: Get.width / 2,
+      child: pw.Image(
+        pw.MemoryImage(bytes),
+      ),
+    );
+  }
+
+  pw.Widget _buildHeader(
+      pw.Context context, int? invoiceNumber, Font? myFont, Uint8List bytes,
       {String? date}) {
     return pw.Directionality(
       textDirection: pw.TextDirection.rtl,
       child: pw.Column(
         children: [
+          imageContainer(bytes),
           pw.Container(
             // height: 20,
             padding: const pw.EdgeInsets.only(left: 20),
@@ -332,7 +394,7 @@ class PDFController {
             child: pw.Text(
               invoiceNumber == null ? "تقرير" : "فاتورة",
               style: pw.TextStyle(
-                color: baseColor,
+                color: PdfColors.black,
                 font: myFont,
                 fontStyle: pw.FontStyle.normal,
                 fontWeight: pw.FontWeight.bold,
@@ -344,7 +406,7 @@ class PDFController {
           pw.Container(
             decoration: const pw.BoxDecoration(
               borderRadius: pw.BorderRadius.all(pw.Radius.circular(2)),
-              color: accentColor,
+              color: baseColor,
             ),
             padding: const pw.EdgeInsets.only(
                 left: 40, top: 10, bottom: 10, right: 20),
@@ -352,7 +414,7 @@ class PDFController {
             height: 50,
             child: pw.DefaultTextStyle(
               style: pw.TextStyle(
-                color: PdfColors.white,
+                color: PdfColors.black,
                 font: myFont,
                 fontSize: 10,
               ),

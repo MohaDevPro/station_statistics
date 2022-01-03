@@ -27,7 +27,7 @@ class PDFPreview extends StatefulWidget {
   // ];
 
   static const Map<String, PdfPageFormat> pageFormats = {
-    "8 سم": PdfPageFormat(80 * mm, 148 * mm, marginAll: 5 * mm),
+    "8 سم": PdfPageFormat.roll80,
     "A6": PdfPageFormat.a6,
     "A5": PdfPageFormat.a5,
     "A4": PdfPageFormat.a4,
@@ -67,7 +67,8 @@ class _PDFPreviewState extends State<PDFPreview> {
 
   static const double inch = 72.0;
   static const double mm = inch / 25.4;
-  var _pageFormat = PdfPageFormat(80 * mm, 148 * mm, marginAll: 5 * mm);
+  // var _pageFormat = PdfPageFormat(80 * mm, double.infinity, marginAll: 5 * mm);
+  var _pageFormat = PdfPageFormat.roll80;
   var iconColor = Colors.white;
   var dropdownColor = Colors.blue;
   final keys = PDFPreview.pageFormats.keys.toList();

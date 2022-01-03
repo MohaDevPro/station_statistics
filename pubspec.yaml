@@ -32,6 +32,7 @@ dependencies:
   pdf: any
   printing: ^5.6.6
   file_picker: ^4.2.7
+  image_picker: ^0.8.4+4
   intl: ^0.17.0
   permission_handler: 6.1.0
   # The following adds the Cupertino Icons font to your application.
