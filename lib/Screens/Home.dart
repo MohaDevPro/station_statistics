@@ -70,67 +70,68 @@ class _HomeState extends State<Home> {
               IconButton(
                   icon: Icon(Icons.print),
                   onPressed: () async {
-                    if (UserPreferences().prefs.getString("path") != null) {
-                      if (itemController.listItemsCart.isNotEmpty) {
-                        var total = 0.0;
-                        for (var i in itemController.listItemsCart) {
-                          total += double.parse(
-                              (i.price! * i.quantity!).toStringAsFixed(2));
-                        }
-                        var invoice = Invoice(
-                          totalPrice: double.parse(total.toStringAsFixed(2)),
-                          timeStamp: DateTime.now().microsecondsSinceEpoch,
-                          tax: 15.0,
-                        );
-                        var invoiceID = await LocalDB()
-                            .appDatabaseCache
-                            .invoiceDAO
-                            .insertInvoice(invoice);
-                        for (var i in itemController.listItemsCart) {
-                          await LocalDB()
-                              .appDatabaseCache
-                              .invoiceItemDAO
-                              .insertInvoiceItem(
-                                InvoiceItem(
-                                  price: i.price,
-                                  quantity: i.quantity,
-                                  invoiceID: invoiceID,
-                                  type: i.type,
-                                ),
-                              );
-                        }
-                        itemController.clearItems();
+                    // if (UserPreferences().prefs.getString("path") != null) {
+                    if (itemController.listItemsCart.isNotEmpty) {
+                      var total = 0.0;
+                      for (var i in itemController.listItemsCart) {
+                        total += double.parse(
+                            (i.price! * i.quantity!).toStringAsFixed(2));
                       }
-                      var lastInvoice = await LocalDB()
+                      var invoice = Invoice(
+                        totalPrice: double.parse(total.toStringAsFixed(2)),
+                        timeStamp: DateTime.now().microsecondsSinceEpoch,
+                        tax: 15.0,
+                      );
+                      var invoiceID = await LocalDB()
                           .appDatabaseCache
                           .invoiceDAO
-                          .getAllInvoices();
-                      if (lastInvoice.isNotEmpty) {
-                        Get.to(
-                            () => PDFPreview(
-                                  data: [
-                                    lastInvoice.last,
-                                  ],
-                                  invoiceNumber: lastInvoice.last.id,
-                                ),
-                            preventDuplicates: true);
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (context) => CustomDialog(
-                            message: "لا يوجد فواتير",
-                            color: Colors.blue.shade300,
-                            confirmButton: () {
-                              Get.back();
-                            },
-                            cancelButton: false,
-                            confirmButtonTitle: "حسناً",
-                          ),
-                        );
+                          .insertInvoice(invoice);
+                      for (var i in itemController.listItemsCart) {
+                        await LocalDB()
+                            .appDatabaseCache
+                            .invoiceItemDAO
+                            .insertInvoiceItem(
+                              InvoiceItem(
+                                price: i.price,
+                                quantity: i.quantity,
+                                invoiceID: invoiceID,
+                                type: i.type,
+                              ),
+                            );
                       }
-                    } else {
-                      await PickImage.pick();
+                      itemController.clearItems();
                     }
+                    var lastInvoice = await LocalDB()
+                        .appDatabaseCache
+                        .invoiceDAO
+                        .getAllInvoices();
+                    if (lastInvoice.isNotEmpty) {
+                      Get.to(
+                          () => PDFPreview(
+                                data: [
+                                  lastInvoice.last,
+                                ],
+                                invoiceNumber: lastInvoice.last.id,
+                              ),
+                          preventDuplicates: true);
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (context) => CustomDialog(
+                          message: "لا يوجد فواتير",
+                          color: Colors.blue.shade300,
+                          confirmButton: () {
+                            Get.back();
+                          },
+                          cancelButton: false,
+                          confirmButtonTitle: "حسناً",
+                        ),
+                      );
+                    }
+                    // }
+                    // else {
+                    //   await PickImage.pick();
+                    // }
                   }),
               IconButton(
                   icon: Icon(Icons.stacked_bar_chart),

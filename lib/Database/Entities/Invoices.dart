@@ -22,6 +22,7 @@ class Invoice {
   });
 
   String? getIndex(int index, int row) {
+    print("% " + tax!.toInt().toString());
     final intl.DateFormat formatter = intl.DateFormat('yyyy-MM-dd hh:mm:ss');
     switch (index) {
       case 3:

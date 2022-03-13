@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 
+class Server {
+  // static String url = "http://192.168.1.202:86/api";
+  static String url = "https://stationstat.somee.com/api";
+}
+
 class CustomDialog extends StatelessWidget {
   final String message;
   final IconData? icon;

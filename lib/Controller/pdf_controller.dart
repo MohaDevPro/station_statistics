@@ -23,12 +23,21 @@ class PDFController {
       PdfPageFormat pageFormat, List<Invoice> data, int? invoiceNumber,
       {String? date}) async {
     List<InvoiceItem> itemInvoiceVM = [];
-    print("UserPreferences().prefs.getString("
-        ")! ${UserPreferences().prefs.getString("path")!}");
-    var f = File(UserPreferences().prefs.getString("path")!);
-    Uint8List bytes = f.readAsBytesSync();
-    print("UserPreferences().prefs.getString("
-        ")! ${UserPreferences().prefs.getString("path")!}");
+    var f;
+    Uint8List bytes;
+    if (UserPreferences().prefs.getString("path") != null) {
+      print("UserPreferences().prefs.getString("
+          ")! ${UserPreferences().prefs.getString("path")!}");
+      f = File(UserPreferences().prefs.getString("path")!);
+      bytes = f.readAsBytesSync();
+      print("UserPreferences().prefs.getString("
+          ")! ${UserPreferences().prefs.getString("path")!}");
+    } else {
+      bytes = await rootBundle
+          .load("assets/logo.png")
+          .then((value) => value.buffer.asUint8List());
+    }
+
     if (data.length == 1 && invoiceNumber != null) {
       print("length Done");
       List<InvoiceItem> itemInvoices = await LocalDB()

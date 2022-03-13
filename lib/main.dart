@@ -4,12 +4,14 @@
 // ****************************************
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:station_statistics/Controller/user_controller.dart';
 import 'package:station_statistics/Database/Entities/User.dart';
 import 'package:station_statistics/Services/user_preferences.dart';
 
 import 'Database/database/database.dart';
 import 'Screens/Home.dart';
 import 'Screens/Login.dart';
+import 'Screens/LoginSerial.dart';
 import 'Services/LocalDB.dart';
 
 void main() async {
@@ -34,6 +36,8 @@ class MyApp extends StatelessWidget {
   UserPreferences userPreferences = UserPreferences();
   @override
   Widget build(BuildContext context) {
+    print(
+        "userPreferences.prefs.getString(serial) ${userPreferences.prefs.getString("serial")}");
     // var dateTime = DateTime.now().millisecondsSinceEpoch;
     // var t = DateTime.fromMillisecondsSinceEpoch(dateTime);
     // // var d12 = DateFormat('MM/dd/yyyy, hh:mm a').format(dt);
@@ -41,14 +45,67 @@ class MyApp extends StatelessWidget {
     // print("============ ${dateTime} =============");
     // print("============ ${t} =============");
     return GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: userPreferences.getUser().userName != null ? Home() : Login());
+      debugShowCheckedModeBanner: false,
+      title: 'إحصائيات المحطات',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: userPreferences.prefs.getString("serial") != null
+          ? FutureBuilder(
+              future: UserController.isRegister(
+                  userPreferences.prefs.getString("serial") ?? ""),
+              builder: (context, AsyncSnapshot<bool?> snapshot) {
+                if (snapshot.hasError) {
+                  return Scaffold(body: Text(snapshot.error.toString()));
+                }
+                if (!snapshot.hasData) {
+                  return Scaffold(
+                    body: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+                if (snapshot.hasData) {
+                  if (snapshot.data!) {
+                    return userPreferences.getUser().userName != null
+                        ? Home()
+                        : Login();
+                  } else {
+                    return LoginSerial();
+                  }
+                }
+
+                return Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              },
+            )
+          : LoginSerial(),
+    );
   }
 }
+//
+// class MyApp extends StatelessWidget {
+//   UserPreferences userPreferences = UserPreferences();
+//   @override
+//   Widget build(BuildContext context) {
+//     // var dateTime = DateTime.now().millisecondsSinceEpoch;
+//     // var t = DateTime.fromMillisecondsSinceEpoch(dateTime);
+//     // // var d12 = DateFormat('MM/dd/yyyy, hh:mm a').format(dt);
+//     // print("============ ${DateTime.now()} =============");
+//     // print("============ ${dateTime} =============");
+//     // print("============ ${t} =============");
+//     return GetMaterialApp(
+//         debugShowCheckedModeBanner: false,
+//         title: 'Flutter Demo',
+//         theme: ThemeData(
+//           primarySwatch: Colors.blue,
+//         ),
+//         home: userPreferences.getUser().userName != null ? Home() : Login());
+//   }
+// }
 
 InputDecoration inputStyle(
     {bool isFocused = false,
